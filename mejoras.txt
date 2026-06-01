@@ -20,7 +20,7 @@ crear pestana de admin para agregar y actulizar cosas como partidos y noticias
 -goalkeepers
     agregar pestana
     tambien agregar la membresia de goalkepeers.
-    que aparescan inmagenes y videos de la carpeta de goalkeepers referencias
+    que aparescan imagenes y videos de la carpeta de goalkeepers referencias
 
 -quitar y agregar botones
     quitar Programs y Join us
