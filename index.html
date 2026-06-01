@@ -132,7 +132,7 @@
     /* Cards */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 30px;
     }
     .card {
@@ -248,9 +248,25 @@
 
     /* Responsive */
     @media (max-width: 768px) {
-      .hero-text h1 { font-size: 3rem; }
-      .nav ul { display: none; }
-      .match-center { flex-direction: column; gap: 20px; }
+      .hero { height: auto; padding: 100px 0 60px; }
+      .hero-text h1 { font-size: 2.5rem; }
+      .nav-content { flex-direction: column; gap: 15px; text-align: center; }
+      .nav ul { 
+        display: flex; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+        gap: 15px; 
+        font-size: 0.75rem;
+      }
+      .logo { border-left: none; border-bottom: 4px solid var(--chivas-red); padding-left: 0; padding-bottom: 5px; }
+      .match-center { flex-direction: column; gap: 20px; text-align: center; margin-top: -20px; margin-bottom: 40px; }
+      .section-title { font-size: 1.5rem; }
+      .hero::after { background-size: 100px 10px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-text h1 { font-size: 2rem; }
+      .top-bar ul { justify-content: center; font-size: 0.7rem; gap: 10px; }
     }
   </style>
 </head>
@@ -446,6 +462,7 @@
             <li><a href="https://www.instagram.com/thescfg" target="_blank">Instagram</a></li>
             <li><a href="tel:7604696501">Call: 760-469-6501</a></li>
             <li><a href="tel:7604696501" style="color: var(--chivas-red); font-weight: 700;">Sponsorship Inquiry</a></li>
+            <li><a href="#" style="font-size: 0.7rem; margin-top: 20px; opacity: 0.5;">Admin Login</a></li>
           </ul>
         </div>
       </div>
