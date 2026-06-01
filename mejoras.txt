@@ -31,4 +31,5 @@ crear pestana de admin para agregar y actulizar cosas como partidos y noticias
     mandar a un nuevo apartado debajo de the club para describir al dueno.
     
 -agregar area de matches
+    agregar area hasta arriba de la pagina
     aqui apareceran los partidos 
