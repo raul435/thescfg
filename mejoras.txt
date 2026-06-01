@@ -1,0 +1,34 @@
+crear pestana de admin para agregar y actulizar cosas como partidos y noticias
+
+-tscfg
+    quitar boton
+-Men's 
+    Agregar pestana que contenga los programas de entrenamiento y partidos, como objetivos, horarios y foto del equipo.
+    resultados de exitos de jugadores que han firmado en otros lugares.
+    agregar galeria de fotos hasta abajo de la carpeta men's
+
+-Womens's
+    Agregar pestana que contenga los programas de entrenamiento y partidos, como objetivos, horarios y foto del equipo.
+    resultados de exitos de jugadores que han firmado en otros lugares.
+    agregar galeria de fotos hasta abajo de la carpeta Women's
+
+-Academy
+    Agregar pestana
+    agregar opciones de membresia (boys, female, male, goalkeepers).
+    agregar galeria de fotos hasta abajo de la carpeta Academy
+
+-goalkeepers
+    agregar pestana
+    tambien agregar la membresia de goalkepeers.
+    que aparescan inmagenes y videos de la carpeta de goalkeepers referencias
+
+-quitar y agregar botones
+    quitar Programs y Join us
+    agregar en linea azul boton para tienda.
+    agregar boton en linea blanca "meet the owner" despues del boton the Club
+
+-boton meet the owner
+    mandar a un nuevo apartado debajo de the club para describir al dueno.
+    
+-agregar area de matches
+    aqui apareceran los partidos 
