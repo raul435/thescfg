@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TSCFG | The Southern California Footballing Group</title>
+  <!-- Google Fonts: Montserrat for that sporty, modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --chivas-red: #C8102E;
+      --chivas-blue: #002855;
+      --chivas-white: #FFFFFF;
+      --chivas-gray: #F4F4F4;
+      --chivas-text: #333333;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Montserrat', sans-serif; 
+      line-height: 1.6; 
+      color: var(--chivas-text);
+      background-color: var(--chivas-white);
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* Top Tier Bar */
+    .top-bar {
+      background: var(--chivas-blue);
+      color: white;
+      padding: 10px 0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .top-bar ul {
+      display: flex;
+      justify-content: flex-start;
+      list-style: none;
+      gap: 20px;
+    }
+    .top-bar a { color: rgba(255,255,255,0.7); text-decoration: none; transition: 0.3s; }
+    .top-bar a.active, .top-bar a:hover { color: white; }
+
+    /* Main Navigation */
+    .nav {
+      background: white;
+      padding: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .nav-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--chivas-blue);
+      text-decoration: none;
+      border-left: 5px solid var(--chivas-red);
+      padding-left: 10px;
+    }
+    .nav ul {
+      display: flex;
+      list-style: none;
+      gap: 25px;
+    }
+    .nav a {
+      color: var(--chivas-blue);
+      text-decoration: none;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+    .nav a:hover { color: var(--chivas-red); }
+
+    /* Hero Section / Match Center style */
+    .hero {
+      position: relative;
+      height: 70vh;
+      background: linear-gradient(rgba(0,40,85,0.6), rgba(0,40,85,0.6)), 
+                  url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      color: white;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: repeating-linear-gradient(90deg, var(--chivas-red) 0, var(--chivas-red) 50px, white 50px, white 100px);
+    }
+    .hero-text h1 {
+      font-size: 4.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .hero-text p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      max-width: 600px;
+    }
+
+    /* Sections */
+    .section { padding: 80px 0; }
+    .section-title {
+      text-align: left;
+      margin-bottom: 40px;
+      border-bottom: 4px solid var(--chivas-red);
+      display: inline-block;
+      padding-bottom: 10px;
+      font-size: 2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--chivas-blue);
+    }
+    .section-bg-gray { background-color: var(--chivas-gray); }
+
+    /* Cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+    }
+    .card {
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); }
+    .card-img {
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+    }
+    .card-body { padding: 25px; }
+    .card-tag {
+      background: var(--chivas-red);
+      color: white;
+      padding: 4px 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    .card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      color: var(--chivas-blue);
+      text-transform: uppercase;
+    }
+    .card p { font-size: 0.95rem; color: #666; }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      background: var(--chivas-red);
+      color: white;
+      padding: 12px 30px;
+      text-decoration: none;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      border-radius: 0;
+      transition: 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { background: var(--chivas-blue); }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--chivas-red);
+      color: var(--chivas-red);
+    }
+    .btn-outline:hover { background: var(--chivas-red); color: white; }
+
+    /* Match Center Widget Style */
+    .match-center {
+      background: white;
+      border-left: 10px solid var(--chivas-red);
+      padding: 30px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-top: -50px;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    }
+    .match-info { text-align: center; }
+    .match-info .label { font-size: 0.7rem; color: #999; font-weight: 700; text-transform: uppercase; }
+    .match-info .team { font-size: 1.5rem; font-weight: 800; color: var(--chivas-blue); }
+    .match-info .vs { font-size: 1.2rem; color: var(--chivas-red); font-weight: 800; margin: 0 20px; }
+
+    /* Footer */
+    footer {
+      background: var(--chivas-blue);
+      color: white;
+      padding: 60px 0 20px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-logo { font-weight: 800; font-size: 2rem; margin-bottom: 20px; display: block; }
+    .footer-links h4 { text-transform: uppercase; margin-bottom: 20px; font-size: 1rem; }
+    .footer-links ul { list-style: none; }
+    .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; display: block; margin-bottom: 10px; transition: 0.3s; }
+    .footer-links a:hover { color: white; }
+    
+    .sponsors {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      opacity: 0.5;
+    }
+    .sponsors span { font-weight: 800; font-size: 1.2rem; }
+
+    .copyright {
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-text h1 { font-size: 3rem; }
+      .nav ul { display: none; }
+      .match-center { flex-direction: column; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Tier -->
+  <div class="top-bar">
+    <div class="container">
+      <ul>
+        <li><a href="#" class="active">TSCFG</a></li>
+        <li><a href="#">Men's</a></li>
+        <li><a href="#">Women's</a></li>
+        <li><a href="#">Academy</a></li>
+        <li><a href="#">Goalkeepers</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main Navigation -->
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="#" class="logo">TSCFG</a>
+        <ul>
+          <li><a href="#news">News</a></li>
+          <li><a href="#programs">Programs</a></li>
+          <li><a href="#matches">Matches</a></li>
+          <li><a href="#about">The Club</a></li>
+          <li><a href="#contact">Join Us</a></li>
+        </ul>
+        <a href="#contact" class="btn">Register Now</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-text">
+        <p style="font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--chivas-red);">Southern California's Best</p>
+        <h1>Developing the<br>Next Generation</h1>
+        <p>Grassroots Football • Long-Term Development • Goalkeeper Excellence. Join the premier footballing group in SoCal.</p>
+        <div style="display: flex; gap: 15px;">
+          <a href="#contact" class="btn">Get Started</a>
+          <a href="#about" class="btn btn-outline" style="border-color: white; color: white;">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Match Center Widget -->
+  <div class="container">
+    <div class="match-center">
+      <div class="match-info">
+        <div class="label">Next Training Session</div>
+        <div class="team">Women's Team</div>
+      </div>
+      <div class="match-info">
+        <div class="vs">WED @ 6:30 PM</div>
+      </div>
+      <div class="match-info">
+        <div class="label">Location</div>
+        <div class="team">SoCal Fields</div>
+      </div>
+      <a href="#matches" class="btn btn-outline">Full Schedule</a>
+    </div>
+  </div>
+
+  <!-- News / Programs Section -->
+  <section id="news" class="section">
+    <div class="container">
+      <h2 class="section-title">Latest Updates</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1517466787929-bc90951d0974?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+          <div class="card-body">
+            <span class="card-tag">Men's Program</span>
+            <h3>Elite Men's Training</h3>
+            <p>Intensive training sessions for players 16 years and older looking to elevate their game to the next level.</p>
+            <a href="#" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">READ MORE +</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1526232759583-26f173565b45?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+          <div class="card-body">
+            <span class="card-tag">Women's Program</span>
+            <h3>Women's Football Growth</h3>
+            <p>Join our exclusive program for girls and women (13+). Focusing on technical skills and tactical awareness.</p>
+            <a href="#" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">READ MORE +</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1551958219-acbc608c6377?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+          <div class="card-body">
+            <span class="card-tag">Academy</span>
+            <h3>Boys Academy (U12-U15)</h3>
+            <p>Grassroots development focusing on the fundamentals of the game for the next generation of stars.</p>
+            <a href="#" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">READ MORE +</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Goalkeeper Section -->
+  <section id="goalkeeper" class="section section-bg-gray">
+    <div class="container">
+      <div style="display: flex; align-items: center; gap: 50px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 300px;">
+          <h2 class="section-title">Goalkeeper Excellence</h2>
+          <p style="font-size: 1.2rem; margin-bottom: 30px;">
+            Specialized and personalized training for goalkeepers. 
+            We develop technique, mentality, and goalkeeper-specific skills to command the box.
+          </p>
+          <a href="#contact" class="btn">Join the GK Academy</a>
+        </div>
+        <div style="flex: 1; min-width: 300px;">
+          <img src="https://images.unsplash.com/photo-1624880357913-4f2d9e4c3c3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Goalkeeper" style="width: 100%; border-radius: 4px; box-shadow: 20px 20px 0 var(--chivas-red);">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="section">
+    <div class="container" style="text-align: center;">
+      <h2 class="section-title" style="display: block; margin: 0 auto 40px; text-align: center;">The Club</h2>
+      <p style="font-size: 1.4rem; max-width: 800px; margin: 0 auto 40px; font-weight: 400; color: #555;">
+        We are a grassroots football club in Southern California dedicated to long-term player development. 
+        We discover talent, build character, and create a strong community through the beautiful game.
+      </p>
+      <div class="grid" style="margin-top: 60px;">
+        <div style="text-align: center;">
+          <h3 style="color: var(--chivas-red); font-size: 3rem; font-weight: 800;">2025</h3>
+          <p style="text-transform: uppercase; font-weight: 700; font-size: 0.9rem;">Established</p>
+        </div>
+        <div style="text-align: center;">
+          <h3 style="color: var(--chivas-red); font-size: 3rem; font-weight: 800;">100%</h3>
+          <p style="text-transform: uppercase; font-weight: 700; font-size: 0.9rem;">Dedication</p>
+        </div>
+        <div style="text-align: center;">
+          <h3 style="color: var(--chivas-red); font-size: 3rem; font-weight: 800;">SoCal</h3>
+          <p style="text-transform: uppercase; font-weight: 700; font-size: 0.9rem;">Based</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="section section-bg-gray" style="text-align: center;">
+    <div class="container">
+      <h2 class="section-title" style="display: block; margin: 0 auto 20px; text-align: center;">Ready to Join?</h2>
+      <p style="margin-bottom: 40px; font-size: 1.1rem;">Follow us and contact us on Instagram to start your journey.</p>
+      <a href="https://www.instagram.com/thescfg" target="_blank" class="btn" style="padding: 20px 50px; font-size: 1.2rem;">@thescfg</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-links">
+          <span class="footer-logo">TSCFG</span>
+          <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">The Southern California Footballing Group. Professional development for the grassroots level.</p>
+        </div>
+        <div class="footer-links">
+          <h4>The Club</h4>
+          <ul>
+            <li><a href="#about">History</a></li>
+            <li><a href="#news">News</a></li>
+            <li><a href="#matches">Schedule</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Programs</h4>
+          <ul>
+            <li><a href="#">Men's</a></li>
+            <li><a href="#">Women's</a></li>
+            <li><a href="#">Academy</a></li>
+            <li><a href="#">Goalkeepers</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="https://www.instagram.com/thescfg" target="_blank">Instagram</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sponsors">
+        <span>SPONSOR 1</span>
+        <span>SPONSOR 2</span>
+        <span>SPONSOR 3</span>
+        <span>SPONSOR 4</span>
+      </div>
+
+      <div class="copyright">
+        <p>&copy; 2026 The Southern California Footballing Group (TSCFG) • Est. 2025</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
