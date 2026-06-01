@@ -1,5 +1,7 @@
 crear pestana de admin para agregar y actulizar cosas como partidos y noticias
 
+-cambiar foto principal por foto_principal.jpg
+
 -tscfg
     quitar boton
 -Men's 
