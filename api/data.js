@@ -12,55 +12,91 @@ module.exports = (req, res) => {
     return res.status(200).end();
   }
 
-  if (req.method === 'GET') {
+  const readData = () => {
     try {
       if (!fs.existsSync(filePath)) {
-        return res.status(200).json({ matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } });
+        return { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
       }
       const jsonData = fs.readFileSync(filePath, 'utf8');
-      return res.status(200).json(JSON.parse(jsonData));
+      return jsonData ? JSON.parse(jsonData) : { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
     } catch (error) {
-      return res.status(500).json({ error: 'Failed to read data' });
+      console.error('Read error:', error);
+      return { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
     }
+  };
+
+  const writeData = (data) => {
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+      return true;
+    } catch (error) {
+      console.error('Write error:', error);
+      return false;
+    }
+  };
+
+  if (req.method === 'GET') {
+    return res.status(200).json(readData());
   }
 
   if (req.method === 'POST') {
     try {
-      const currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      const { type, category, item } = req.body;
+      const currentData = readData();
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      const { type, category, item } = body;
+
+      if (!type || !item) {
+        return res.status(400).json({ error: 'Missing type or item' });
+      }
 
       if (type === 'galleries') {
+        if (!category) return res.status(400).json({ error: 'Missing category for gallery' });
+        if (!currentData.galleries) currentData.galleries = {};
         if (!currentData.galleries[category]) currentData.galleries[category] = [];
         const newItem = { id: Date.now(), ...item };
         currentData.galleries[category].push(newItem);
       } else {
-        if (!currentData[type]) return res.status(400).json({ error: 'Invalid type' });
+        if (!currentData[type]) currentData[type] = [];
         const newItem = { id: Date.now(), ...item };
         currentData[type].push(newItem);
       }
       
-      fs.writeFileSync(filePath, JSON.stringify(currentData, null, 2));
-      return res.status(200).json({ success: true });
+      if (writeData(currentData)) {
+        return res.status(200).json({ success: true });
+      } else {
+        return res.status(500).json({ error: 'Failed to save data. If you are on Vercel, note that local file storage is not supported.' });
+      }
     } catch (error) {
-      return res.status(500).json({ error: 'Failed to save data' });
+      console.error('POST error:', error);
+      return res.status(500).json({ error: 'Failed to process request: ' + error.message });
     }
   }
 
   if (req.method === 'DELETE') {
     try {
       const { type, category, id } = req.query;
-      let currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      if (!type || !id) {
+        return res.status(400).json({ error: 'Missing type or id' });
+      }
+
+      let currentData = readData();
 
       if (type === 'galleries') {
-        currentData.galleries[category] = currentData.galleries[category].filter(i => i.id.toString() !== id.toString());
-      } else {
+        if (category && currentData.galleries && currentData.galleries[category]) {
+          currentData.galleries[category] = currentData.galleries[category].filter(i => i.id.toString() !== id.toString());
+        }
+      } else if (currentData[type]) {
         currentData[type] = currentData[type].filter(i => i.id.toString() !== id.toString());
       }
 
-      fs.writeFileSync(filePath, JSON.stringify(currentData, null, 2));
-      return res.status(200).json({ success: true });
+      if (writeData(currentData)) {
+        return res.status(200).json({ success: true });
+      } else {
+        return res.status(500).json({ error: 'Failed to delete data' });
+      }
     } catch (error) {
-      return res.status(500).json({ error: 'Failed to delete data' });
+      console.error('DELETE error:', error);
+      return res.status(500).json({ error: 'Failed to process delete: ' + error.message });
     }
   }
 
