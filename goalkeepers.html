@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goalkeepers | TSCFG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --chivas-red: #C8102E;
+      --chivas-blue: #002855;
+      --chivas-white: #FFFFFF;
+      --chivas-gray: #F4F4F4;
+      --chivas-text: #333333;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Montserrat', sans-serif; line-height: 1.6; color: var(--chivas-text); background-color: var(--chivas-white); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    .top-bar { background: var(--chivas-blue); color: white; padding: 10px 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+    .top-bar ul { display: flex; list-style: none; gap: 20px; }
+    .top-bar a { color: rgba(255,255,255,0.7); text-decoration: none; }
+    .top-bar a:hover { color: white; }
+
+    .nav { background: white; padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+    .nav-content { display: flex; justify-content: space-between; align-items: center; }
+    .logo-container { display: flex; align-items: center; text-decoration: none; gap: 15px; }
+    .logo-img { height: 50px; }
+    .logo-text { font-weight: 800; font-size: 1.8rem; color: var(--chivas-blue); border-left: 5px solid var(--chivas-red); padding-left: 10px; text-transform: uppercase; }
+    .nav ul { display: flex; list-style: none; gap: 25px; }
+    .nav a { color: var(--chivas-blue); text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.9rem; }
+    .nav a:hover { color: var(--chivas-red); }
+
+    .section { padding: 80px 0; }
+    .section-title { border-bottom: 4px solid var(--chivas-red); display: inline-block; padding-bottom: 10px; font-size: 2rem; font-weight: 800; text-transform: uppercase; color: var(--chivas-blue); margin-bottom: 40px; }
+    
+    .btn { display: inline-block; background: var(--chivas-red); color: white; padding: 12px 30px; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; transition: 0.3s; }
+    .btn:hover { background: var(--chivas-blue); }
+
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+    .media-item video, .media-item img { width: 100%; height: 300px; object-fit: cover; border-radius: 4px; }
+
+    footer { background: var(--chivas-blue); color: white; padding: 60px 0 20px; margin-top: 80px; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
+    .footer-links h4 { text-transform: uppercase; margin-bottom: 20px; }
+    .footer-links ul { list-style: none; }
+    .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; margin-bottom: 10px; }
+    .copyright { text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="container">
+      <ul>
+        <li><a href="mens.html">Men's</a></li>
+        <li><a href="womens.html">Women's</a></li>
+        <li><a href="academy.html">Academy</a></li>
+        <li><a href="goalkeepers.html">Goalkeepers</a></li>
+        
+        <li><a href="#">Tienda</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="index.html" class="logo-container">
+          <img src="fotos_principal/logo.jpeg" alt="TSCFG Logo" class="logo-img">
+          <span class="logo-text">TSCFG</span>
+        </a>
+        <ul>
+          <li><a href="index.html#news">News</a></li>
+          <li><a href="index.html#matches">Matches</a></li>
+          <li><a href="index.html#about">The Club</a></li>
+          <li><a href="index.html#owner">Meet the Owner</a></li>
+        </ul>
+        <a href="index.html#contact" class="btn">Register Now</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Goalkeeper Excellence</h2>
+      <div style="display: flex; gap: 50px; flex-wrap: wrap; margin-bottom: 60px;">
+        <div style="flex: 2; min-width: 300px;">
+          <h3>Specialized GK Training</h3>
+          <p>The modern goalkeeper needs more than just shot-stopping. Our program focuses on distribution, communication, positioning, and mental resilience. We use advanced drills and video analysis to elevate your game.</p>
+          
+          <div style="margin: 30px 0; background: var(--chivas-gray); padding: 30px; border-left: 10px solid var(--chivas-red);">
+            <h4>GK Membership Details</h4>
+            <p>Our Goalkeeper Membership includes 2 specialized sessions per week, access to GK-specific camps, and personalized performance tracking.</p>
+            <p style="margin-top: 10px;"><strong>Ages:</strong> 8 - 18+ (Groups separated by skill/age)</p>
+          </div>
+
+          <a href="index.html#contact" class="btn">Inquire About Membership</a>
+        </div>
+        <div style="flex: 1; min-width: 300px;">
+          <img src="fotos_principal/gk-excellence.jpg" alt="GK Training" style="width: 100%; border-radius: 4px; box-shadow: 10px 10px 0 var(--chivas-blue);">
+        </div>
+      </div>
+
+      <h2 class="section-title">Goalkeeper Events & Clinics</h2>
+      <div id="dynamic-matches" style="margin-bottom: 40px;">
+        <p>No upcoming clinics scheduled.</p>
+      </div>
+
+      <h2 class="section-title">Training Media</h2>
+      <p>Watch our keepers in action and see the level of intensity we bring to every session.</p>
+      <div class="media-grid">
+        <div class="media-item">
+          <video controls muted loop poster="cancha.jpg">
+            <source src="practicas/video5.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="media-item">
+          <img src="fotos_principal/gk-card.jpg" alt="GK Action">
+        </div>
+        <div class="media-item">
+          <img src="fotos_principal/gk-excellence.jpg" alt="GK Focus">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-links">
+          <img src="fotos_principal/logo.jpeg" alt="Logo" style="height: 40px; margin-bottom: 20px;">
+          <p style="color: rgba(255,255,255,0.6);">The premier destination for goalkeeper development in SoCal.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="mens.html">Men's</a></li>
+            <li><a href="womens.html">Women's</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Academy</h4>
+          <ul>
+            <li><a href="academy.html">Academy</a></li>
+            <li><a href="goalkeepers.html">Goalkeepers</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2026 TSCFG • Est. 2025</p>
+      </div>
+    </div>
+  </footer>
+  <script>
+    async function loadMatches() {
+      try {
+        const response = await fetch('/api/data');
+        const data = await response.json();
+        const container = document.getElementById('dynamic-matches');
+        const categoryMatches = data.matches.filter(m => m.category === 'gk');
+
+        if (categoryMatches.length > 0) {
+          container.innerHTML = categoryMatches.map(m => `
+            <p><strong>${m.date}:</strong> ${m.title} (${m.location})</p>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Error loading matches:', error);
+      }
+    }
+    window.onload = loadMatches;
+  </script>
+</body>
+</html>

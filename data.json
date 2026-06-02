@@ -1,0 +1,39 @@
+{
+  "matches": [
+    {
+      "id": 1,
+      "category": "mens",
+      "title": "Men's First Team vs SoCal Rivals",
+      "location": "TSCFG Home Ground",
+      "date": "2026-06-06",
+      "time": "16:00",
+      "details": "High stakes match against our local rivals."
+    },
+    {
+      "id": 2,
+      "category": "womens",
+      "title": "Women's Team vs Coastal FC",
+      "location": "Away Ground",
+      "date": "2026-06-07",
+      "time": "10:00",
+      "details": "First away game of the season."
+    },
+    {
+      "id": 1780376880360,
+      "category": "mens",
+      "title": "chivas",
+      "location": "casa",
+      "date": "2026-06-03",
+      "time": "15:33",
+      "details": "qwe"
+    }
+  ],
+  "news": [
+    {
+      "id": 1,
+      "headline": "Practice Highlights I",
+      "content": "Elite training session focusing on finishing.",
+      "video_url": "practicas/video1.mp4"
+    }
+  ]
+}

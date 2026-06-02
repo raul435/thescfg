@@ -42,7 +42,7 @@
       gap: 20px;
     }
     .top-bar a { color: rgba(255,255,255,0.7); text-decoration: none; transition: 0.3s; }
-    .top-bar a.active, .top-bar a:hover { color: white; }
+    .top-bar a:hover { color: white; }
 
     /* Main Navigation */
     .nav {
@@ -200,24 +200,6 @@
     }
     .btn-outline:hover { background: var(--chivas-red); color: white; }
 
-    /* Match Center Widget Style */
-    .match-center {
-      background: white;
-      border-left: 10px solid var(--chivas-red);
-      padding: 30px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-top: -50px;
-      position: relative;
-      z-index: 10;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-    }
-    .match-info { text-align: center; }
-    .match-info .label { font-size: 0.7rem; color: #999; font-weight: 700; text-transform: uppercase; }
-    .match-info .team { font-size: 1.5rem; font-weight: 800; color: var(--chivas-blue); }
-    .match-info .vs { font-size: 1.2rem; color: var(--chivas-red); font-weight: 800; margin: 0 20px; }
-
     /* Footer */
     footer {
       background: var(--chivas-blue);
@@ -269,7 +251,6 @@
         font-size: 0.75rem;
       }
       .logo { border-left: none; border-bottom: 4px solid var(--chivas-red); padding-left: 0; padding-bottom: 5px; }
-      .match-center { flex-direction: column; gap: 20px; text-align: center; margin-top: -20px; margin-bottom: 40px; }
       .section-title { font-size: 1.5rem; }
       .hero::after { background-size: 100px 10px; }
     }
@@ -286,11 +267,12 @@
   <div class="top-bar">
     <div class="container">
       <ul>
-        <li><a href="#" class="active">TSCFG</a></li>
-        <li><a href="#news">Men's</a></li>
-        <li><a href="#news">Women's</a></li>
-        <li><a href="#news">Academy</a></li>
-        <li><a href="#goalkeeper">Goalkeepers</a></li>
+        <li><a href="mens.html">Men's</a></li>
+        <li><a href="womens.html">Women's</a></li>
+        <li><a href="academy.html">Academy</a></li>
+        <li><a href="goalkeepers.html">Goalkeepers</a></li>
+        
+        <li><a href="#">Tienda</a></li>
       </ul>
     </div>
   </div>
@@ -299,16 +281,15 @@
   <nav class="nav">
     <div class="container">
       <div class="nav-content">
-        <a href="#" class="logo-container">
+        <a href="index.html" class="logo-container">
           <img src="fotos_principal/logo.jpeg" alt="TSCFG Logo" class="logo-img">
           <span class="logo-text">TSCFG</span>
         </a>
         <ul>
           <li><a href="#news">News</a></li>
-          <li><a href="#programs">Programs</a></li>
           <li><a href="#matches">Matches</a></li>
           <li><a href="#about">The Club</a></li>
-          <li><a href="#contact">Join Us</a></li>
+          <li><a href="#owner">Meet the Owner</a></li>
         </ul>
         <a href="#contact" class="btn">Register Now</a>
       </div>
@@ -330,21 +311,13 @@
     </div>
   </header>
 
-  <!-- Match Center Widget -->
-  <section id="matches" class="container" style="padding: 60px 0;">
-    <div class="match-center">
-      <div class="match-info">
-        <div class="label">Next Training Session</div>
-        <div class="team">Women's Team</div>
+  <!-- Matches Section -->
+  <section id="matches" class="section">
+    <div class="container">
+      <h2 class="section-title">Match Center</h2>
+      <div id="matches-container" class="grid">
+        <!-- Matches will be loaded here -->
       </div>
-      <div class="match-info">
-        <div class="vs">WED @ 6:30 PM</div>
-      </div>
-      <div class="match-info">
-        <div class="label">Location</div>
-        <div class="team">SoCal Fields</div>
-      </div>
-      <a href="#contact" class="btn btn-outline">Register Now</a>
     </div>
   </section>
 
@@ -352,47 +325,8 @@
   <section id="news" class="section">
     <div class="container">
       <h2 class="section-title">Latest from Training</h2>
-      <div class="grid" style="margin-bottom: 60px;">
-        <div class="card">
-          <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="cancha.jpg" style="object-fit: cover; background: #000;">
-            <source src="practicas/video1.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-          <div class="card-body">
-            <span class="card-tag">Training</span>
-            <h3>Practice Highlights I</h3>
-          </div>
-        </div>
-        <div class="card">
-          <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="cancha.jpg" style="object-fit: cover; background: #000;">
-            <source src="practicas/video2.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-          <div class="card-body">
-            <span class="card-tag">Training</span>
-            <h3>Practice Highlights II</h3>
-          </div>
-        </div>
-        <div class="card">
-          <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="cancha.jpg" style="object-fit: cover; background: #000;">
-            <source src="practicas/video3.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-          <div class="card-body">
-            <span class="card-tag">Training</span>
-            <h3>Practice Highlights III</h3>
-          </div>
-        </div>
-        <div class="card">
-          <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="cancha.jpg" style="object-fit: cover; background: #000;">
-            <source src="practicas/video4.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-          <div class="card-body">
-            <span class="card-tag">Training</span>
-            <h3>Practice Highlights IV</h3>
-          </div>
-        </div>
+      <div id="news-container" class="grid" style="margin-bottom: 60px;">
+        <!-- News will be loaded here -->
       </div>
 
       <div id="programs" style="padding-top: 40px;">
@@ -403,8 +337,8 @@
             <div class="card-body">
               <span class="card-tag">Men's Program</span>
               <h3>Elite Men's Training</h3>
-              <p>Intensive training sessions for players 16 years and older looking to elevate their game to the next level.</p>
-              <a href="#contact" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">JOIN NOW +</a>
+              <p>Intensive training sessions for players 16 years and older looking to elevate their game.</p>
+              <a href="mens.html" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">LEARN MORE +</a>
             </div>
           </div>
           <div class="card">
@@ -412,8 +346,8 @@
             <div class="card-body">
               <span class="card-tag">Women's Program</span>
               <h3>Women's Football Growth</h3>
-              <p>Join our exclusive program for girls and women (13+). Focusing on technical skills and tactical awareness.</p>
-              <a href="#contact" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">JOIN NOW +</a>
+              <p>Join our exclusive program for girls and women (13+). Focusing on technical skills.</p>
+              <a href="womens.html" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">LEARN MORE +</a>
             </div>
           </div>
           <div class="card">
@@ -421,8 +355,8 @@
             <div class="card-body">
               <span class="card-tag">Academy</span>
               <h3>Boys Academy (U12-U15)</h3>
-              <p>Grassroots development focusing on the fundamentals of the game for the next generation of stars.</p>
-              <a href="#contact" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">JOIN NOW +</a>
+              <p>Grassroots development focusing on the fundamentals of the game.</p>
+              <a href="academy.html" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">LEARN MORE +</a>
             </div>
           </div>
           <div class="card">
@@ -430,29 +364,10 @@
             <div class="card-body">
               <span class="card-tag">Goalkeepers</span>
               <h3>GK Excellence</h3>
-              <p>Specialized training to master the box. Technique, positioning, and mental strength for modern keepers.</p>
-              <a href="#contact" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">JOIN NOW +</a>
+              <p>Specialized training to master the box. Technique, positioning, and mental strength.</p>
+              <a href="goalkeepers.html" style="color: var(--chivas-red); font-weight: 700; text-decoration: none; font-size: 0.8rem; margin-top: 15px; display: inline-block;">LEARN MORE +</a>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Goalkeeper Section -->
-  <section id="goalkeeper" class="section section-bg-gray">
-    <div class="container">
-      <div style="display: flex; align-items: center; gap: 50px; flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 300px;">
-          <h2 class="section-title">Goalkeeper Excellence</h2>
-          <p style="font-size: 1.2rem; margin-bottom: 30px;">
-            Specialized and personalized training for goalkeepers. 
-            We develop technique, mentality, and goalkeeper-specific skills to command the box.
-          </p>
-          <a href="#contact" class="btn">Join the GK Academy</a>
-        </div>
-        <div style="flex: 1; min-width: 300px;">
-          <img src="fotos_principal/gk-excellence.jpg" alt="Goalkeeper" style="width: 100%; border-radius: 4px; box-shadow: 20px 20px 0 var(--chivas-red);">
         </div>
       </div>
     </div>
@@ -483,6 +398,28 @@
     </div>
   </section>
 
+  <!-- Meet the Owner Section -->
+  <section id="owner" class="section section-bg-gray">
+    <div class="container">
+      <h2 class="section-title">Meet the Owner</h2>
+      <div style="display: flex; align-items: center; gap: 50px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 300px;">
+          <p style="font-size: 1.2rem; margin-bottom: 20px;">
+            Our owner is dedicated to the growth of football in Southern California. With years of experience in player development and a passion for the grassroots level, they lead TSCFG with a vision of excellence and community.
+          </p>
+          <p style="font-size: 1.1rem; color: #555;">
+            "Football is more than just a game; it's a tool for character building and community strength. At TSCFG, we strive to provide the best environment for our players to thrive both on and off the pitch."
+          </p>
+        </div>
+        <div style="flex: 1; min-width: 300px; text-align: center;">
+          <div style="width: 100%; height: 400px; background: #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #999;">
+            OWNER PHOTO
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Contact Section -->
   <section id="contact" class="section section-bg-gray" style="text-align: center;">
     <div class="container">
@@ -507,7 +444,7 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-links">
-          <a href="#" class="logo-container" style="margin-bottom: 20px;">
+          <a href="index.html" class="logo-container" style="margin-bottom: 20px;">
             <img src="fotos_principal/logo.jpeg" alt="TSCFG Logo" class="logo-img">
             <span class="logo-text" style="color: white; border-color: var(--chivas-red);">TSCFG</span>
           </a>
@@ -524,9 +461,10 @@
         <div class="footer-links">
           <h4>Programs</h4>
           <ul>
-            <li><a href="#news">Men's</a></li>
-            <li><a href="#programs">Programs</a></li>
-            <li><a href="#goalkeeper">Goalkeepers</a></li>
+            <li><a href="mens.html">Men's</a></li>
+            <li><a href="womens.html">Women's</a></li>
+            <li><a href="academy.html">Academy</a></li>
+            <li><a href="goalkeepers.html">Goalkeepers</a></li>
           </ul>
         </div>
         <div class="footer-links">
@@ -534,22 +472,64 @@
           <ul>
             <li><a href="https://www.instagram.com/thescfg" target="_blank">Instagram</a></li>
             <li><a href="tel:7604696501">Call: 760-469-6501</a></li>
-            <li><a href="mailto:tscfg.egp@gmail.com" style="color: var(--chivas-red); font-weight: 700;">Sponsorship Inquiry</a></li>
-            <li><a href="mailto:tscfg.egp@gmail.com" style="font-size: 0.8rem; opacity: 0.7;">tscfg.egp@gmail.com</a></li>
-            <li><a href="#" style="font-size: 0.7rem; margin-top: 20px; opacity: 0.5;">Admin Login</a></li>
+            <li><a href="admin.html" style="font-size: 0.7rem; margin-top: 20px; opacity: 0.5;">Admin Login</a></li>
           </ul>
         </div>
       </div>
-
-      <div class="sponsors">
-        <a href="mailto:tscfg.egp@gmail.com" style="color: white; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.8;">BECOME A SPONSOR +</a>
-      </div>
-
       <div class="copyright">
         <p>&copy; 2026 The Southern California Footballing Group (TSCFG) • Est. 2025</p>
       </div>
     </div>
   </footer>
 
+  <script>
+    async function loadContent() {
+      try {
+        const response = await fetch('/api/data');
+        const data = await response.json();
+
+        // Load Matches
+        const matchesContainer = document.getElementById('matches-container');
+        if (matchesContainer) {
+          matchesContainer.innerHTML = data.matches.map(match => `
+            <div class="card" style="border-left: 5px solid ${match.category === 'mens' ? 'var(--chivas-red)' : 'var(--chivas-blue)'};">
+              <div class="card-body">
+                <span class="card-tag">Upcoming Match</span>
+                <h3>${match.title}</h3>
+                <p><strong>Date:</strong> ${match.date}</p>
+                <p><strong>Time:</strong> ${match.time}</p>
+                <p><strong>Location:</strong> ${match.location}</p>
+                <a href="${match.category}.html" class="btn" style="margin-top: 15px;">More Details</a>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        // Load News
+        const newsContainer = document.getElementById('news-container');
+        if (newsContainer) {
+          newsContainer.innerHTML = data.news.map(item => `
+            <div class="card">
+              ${item.video_url ? `
+                <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="cancha.jpg" style="object-fit: cover; background: #000;">
+                  <source src="${item.video_url}" type="video/mp4">
+                </video>
+              ` : `<div style="height:200px; background: #ddd; display:flex; align-items:center; justify-content:center; font-weight:800; color:#999;">NEWS IMAGE</div>`}
+              <div class="card-body">
+                <span class="card-tag">News Update</span>
+                <h3>${item.headline}</h3>
+                <p>${item.content}</p>
+              </div>
+            </div>
+          `).join('');
+        }
+
+      } catch (error) {
+        console.error('Error loading content:', error);
+      }
+    }
+
+    window.onload = loadContent;
+  </script>
 </body>
 </html>
