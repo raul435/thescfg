@@ -1,7 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
-module.exports = (req, res) => {
+// Vercel KV REST API configuration
+const KV_URL = process.env.KV_REST_API_URL;
+const KV_TOKEN = process.env.KV_REST_API_TOKEN;
+
+module.exports = async (req, res) => {
   const filePath = path.join(process.cwd(), 'data.json');
 
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,7 +16,29 @@ module.exports = (req, res) => {
     return res.status(200).end();
   }
 
-  const readData = () => {
+  // Helper to fetch from Vercel KV
+  const kvFetch = async (command, ...args) => {
+    if (!KV_URL || !KV_TOKEN) return null;
+    try {
+      const response = await fetch(`${KV_URL}/${command}/${args.join('/')}`, {
+        headers: { Authorization: `Bearer ${KV_TOKEN}` }
+      });
+      const data = await response.json();
+      return data.result;
+    } catch (error) {
+      console.error('KV Error:', error);
+      return null;
+    }
+  };
+
+  const readData = async () => {
+    // Try KV first if available
+    if (KV_URL && KV_TOKEN) {
+      const data = await kvFetch('get', 'site_data');
+      if (data) return typeof data === 'string' ? JSON.parse(data) : data;
+    }
+
+    // Fallback to local file
     try {
       if (!fs.existsSync(filePath)) {
         return { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
@@ -20,28 +46,43 @@ module.exports = (req, res) => {
       const jsonData = fs.readFileSync(filePath, 'utf8');
       return jsonData ? JSON.parse(jsonData) : { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
     } catch (error) {
-      console.error('Read error:', error);
       return { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
     }
   };
 
-  const writeData = (data) => {
+  const writeData = async (data) => {
+    // Write to KV if available
+    if (KV_URL && KV_TOKEN) {
+      try {
+        const response = await fetch(`${KV_URL}/set/site_data`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${KV_TOKEN}` },
+          body: JSON.stringify(data)
+        });
+        return response.ok;
+      } catch (error) {
+        console.error('KV Write Error:', error);
+        return false;
+      }
+    }
+
+    // Fallback to local file
     try {
       fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
       return true;
     } catch (error) {
-      console.error('Write error:', error);
       return false;
     }
   };
 
   if (req.method === 'GET') {
-    return res.status(200).json(readData());
+    const data = await readData();
+    return res.status(200).json(data);
   }
 
   if (req.method === 'POST') {
     try {
-      const currentData = readData();
+      const currentData = await readData();
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const { type, category, item } = body;
 
@@ -61,13 +102,12 @@ module.exports = (req, res) => {
         currentData[type].push(newItem);
       }
       
-      if (writeData(currentData)) {
+      if (await writeData(currentData)) {
         return res.status(200).json({ success: true });
       } else {
-        return res.status(500).json({ error: 'Failed to save data. If you are on Vercel, note that local file storage is not supported.' });
+        return res.status(500).json({ error: 'Failed to save data. Make sure KV is configured in Vercel.' });
       }
     } catch (error) {
-      console.error('POST error:', error);
       return res.status(500).json({ error: 'Failed to process request: ' + error.message });
     }
   }
@@ -79,7 +119,7 @@ module.exports = (req, res) => {
         return res.status(400).json({ error: 'Missing type or id' });
       }
 
-      let currentData = readData();
+      let currentData = await readData();
 
       if (type === 'galleries') {
         if (category && currentData.galleries && currentData.galleries[category]) {
@@ -89,13 +129,12 @@ module.exports = (req, res) => {
         currentData[type] = currentData[type].filter(i => i.id.toString() !== id.toString());
       }
 
-      if (writeData(currentData)) {
+      if (await writeData(currentData)) {
         return res.status(200).json({ success: true });
       } else {
         return res.status(500).json({ error: 'Failed to delete data' });
       }
     } catch (error) {
-      console.error('DELETE error:', error);
       return res.status(500).json({ error: 'Failed to process delete: ' + error.message });
     }
   }
