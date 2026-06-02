@@ -96,7 +96,7 @@
       position: relative;
       height: 70vh;
       background: linear-gradient(rgba(0,40,85,0.6), rgba(0,40,85,0.6)), 
-                  url('cancha.jpg') center/cover no-repeat;
+                  url('assets/images/cancha.jpg') center/cover no-repeat;
       display: flex;
       align-items: center;
       color: white;
@@ -282,7 +282,7 @@
     <div class="container">
       <div class="nav-content">
         <a href="index.html" class="logo-container">
-          <img src="fotos_principal/logo.jpeg" alt="TSCFG Logo" class="logo-img">
+          <img src="assets/images/logo.jpeg" alt="TSCFG Logo" class="logo-img">
           <span class="logo-text">TSCFG</span>
         </a>
         <ul>
@@ -333,7 +333,7 @@
         <h2 class="section-title">Our Programs</h2>
         <div class="grid">
           <div class="card">
-            <div class="card-img" style="background-image: url('fotos_principal/mens-program.jpg');"></div>
+            <div class="card-img" style="background-image: url('assets/images/mens-program.jpg');"></div>
             <div class="card-body">
               <span class="card-tag">Men's Program</span>
               <h3>Elite Men's Training</h3>
@@ -342,7 +342,7 @@
             </div>
           </div>
           <div class="card">
-            <div class="card-img" style="background-image: url('fotos_principal/womens-training.jpg');"></div>
+            <div class="card-img" style="background-image: url('assets/images/womens-training.jpg');"></div>
             <div class="card-body">
               <span class="card-tag">Women's Program</span>
               <h3>Women's Football Growth</h3>
@@ -351,7 +351,7 @@
             </div>
           </div>
           <div class="card">
-            <div class="card-img" style="background-image: url('fotos_principal/academy.jpg');"></div>
+            <div class="card-img" style="background-image: url('assets/images/academy.jpg');"></div>
             <div class="card-body">
               <span class="card-tag">Academy</span>
               <h3>Boys Academy (U12-U15)</h3>
@@ -360,7 +360,7 @@
             </div>
           </div>
           <div class="card">
-            <div class="card-img" style="background-image: url('fotos_principal/gk-card.jpg');"></div>
+            <div class="card-img" style="background-image: url('assets/images/gk-card.jpg');"></div>
             <div class="card-body">
               <span class="card-tag">Goalkeepers</span>
               <h3>GK Excellence</h3>
@@ -445,7 +445,7 @@
       <div class="footer-grid">
         <div class="footer-links">
           <a href="index.html" class="logo-container" style="margin-bottom: 20px;">
-            <img src="fotos_principal/logo.jpeg" alt="TSCFG Logo" class="logo-img">
+            <img src="assets/images/logo.jpeg" alt="TSCFG Logo" class="logo-img">
             <span class="logo-text" style="color: white; border-color: var(--chivas-red);">TSCFG</span>
           </a>
           <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">The Southern California Footballing Group. Professional development for the grassroots level.</p>
@@ -514,7 +514,7 @@
               <div class="card">
                 ${item.media_url ? 
                   (isVideo ? `
-                    <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="cancha.jpg" style="object-fit: cover; background: #000;">
+                    <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="assets/images/cancha.jpg" style="object-fit: cover; background: #000;">
                       <source src="${item.media_url}" type="video/mp4">
                     </video>
                   ` : `
