@@ -96,7 +96,7 @@
       position: relative;
       height: 70vh;
       background: linear-gradient(rgba(0,40,85,0.6), rgba(0,40,85,0.6)), 
-                  url('fotos_principal/hero-bg.jpg') center/cover no-repeat;
+                  url('cancha.jpg') center/cover no-repeat;
       display: flex;
       align-items: center;
       color: white;
@@ -324,7 +324,7 @@
   <!-- News / Media Section -->
   <section id="news" class="section">
     <div class="container">
-      <h2 class="section-title">Latest from Training</h2>
+      <h2 class="section-title">News</h2>
       <div id="news-container" class="grid" style="margin-bottom: 60px;">
         <!-- News will be loaded here -->
       </div>
@@ -508,20 +508,27 @@
         // Load News
         const newsContainer = document.getElementById('news-container');
         if (newsContainer) {
-          newsContainer.innerHTML = data.news.map(item => `
-            <div class="card">
-              ${item.video_url ? `
-                <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="cancha.jpg" style="object-fit: cover; background: #000;">
-                  <source src="${item.video_url}" type="video/mp4">
-                </video>
-              ` : `<div style="height:200px; background: #ddd; display:flex; align-items:center; justify-content:center; font-weight:800; color:#999;">NEWS IMAGE</div>`}
-              <div class="card-body">
-                <span class="card-tag">News Update</span>
-                <h3>${item.headline}</h3>
-                <p>${item.content}</p>
+          newsContainer.innerHTML = data.news.map(item => {
+            const isVideo = item.media_url && (item.media_url.includes('video/mp4') || item.media_url.endsWith('.mp4') || item.media_url.startsWith('data:video'));
+            return `
+              <div class="card">
+                ${item.media_url ? 
+                  (isVideo ? `
+                    <video width="100%" height="200" controls muted loop preload="auto" playsinline poster="cancha.jpg" style="object-fit: cover; background: #000;">
+                      <source src="${item.media_url}" type="video/mp4">
+                    </video>
+                  ` : `
+                    <img src="${item.media_url}" alt="News Media" style="width:100%; height:200px; object-fit:cover;">
+                  `) 
+                : `<div style="height:200px; background: #ddd; display:flex; align-items:center; justify-content:center; font-weight:800; color:#999;">NEWS IMAGE</div>`}
+                <div class="card-body">
+                  <span class="card-tag">News Update</span>
+                  <h3>${item.headline}</h3>
+                  <p>${item.content}</p>
+                </div>
               </div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         }
 
       } catch (error) {

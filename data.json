@@ -19,13 +19,13 @@
       "details": "First away game of the season."
     },
     {
-      "id": 1780376880360,
+      "id": 1780377978430,
       "category": "mens",
-      "title": "chivas",
-      "location": "casa",
+      "title": "qwe vs asd",
+      "location": "thousand palms",
       "date": "2026-06-03",
       "time": "15:33",
-      "details": "qwe"
+      "details": ""
     }
   ],
   "news": [
@@ -35,5 +35,11 @@
       "content": "Elite training session focusing on finishing.",
       "video_url": "practicas/video1.mp4"
     }
-  ]
+  ],
+  "galleries": {
+    "mens": [],
+    "womens": [],
+    "academy": [],
+    "goalkeepers": []
+  }
 }

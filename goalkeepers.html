@@ -108,7 +108,7 @@
 
       <h2 class="section-title">Training Media</h2>
       <p>Watch our keepers in action and see the level of intensity we bring to every session.</p>
-      <div class="media-grid">
+      <div id="dynamic-gallery" class="media-grid">
         <div class="media-item">
           <video controls muted loop poster="cancha.jpg">
             <source src="practicas/video5.mp4" type="video/mp4">
@@ -153,23 +153,33 @@
     </div>
   </footer>
   <script>
-    async function loadMatches() {
+    async function loadPageData() {
       try {
         const response = await fetch('/api/data');
         const data = await response.json();
-        const container = document.getElementById('dynamic-matches');
+        
+        // Load Matches
+        const matchContainer = document.getElementById('dynamic-matches');
         const categoryMatches = data.matches.filter(m => m.category === 'gk');
-
         if (categoryMatches.length > 0) {
-          container.innerHTML = categoryMatches.map(m => `
+          matchContainer.innerHTML = categoryMatches.map(m => `
             <p><strong>${m.date}:</strong> ${m.title} (${m.location})</p>
           `).join('');
         }
+
+        // Load Gallery
+        const galleryContainer = document.getElementById('dynamic-gallery');
+        if (data.galleries && data.galleries.goalkeepers && data.galleries.goalkeepers.length > 0) {
+          const galleryHtml = data.galleries.goalkeepers.map(img => `
+            <div class="media-item"><img src="${img.url}" alt="GK Gallery"></div>
+          `).join('');
+          galleryContainer.innerHTML += galleryHtml;
+        }
       } catch (error) {
-        console.error('Error loading matches:', error);
+        console.error('Error loading data:', error);
       }
     }
-    window.onload = loadMatches;
+    window.onload = loadPageData;
   </script>
 </body>
 </html>

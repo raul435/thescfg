@@ -4,9 +4,8 @@ const path = require('path');
 module.exports = (req, res) => {
   const filePath = path.join(process.cwd(), 'data.json');
 
-  // Set CORS headers for local development
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
@@ -16,43 +15,52 @@ module.exports = (req, res) => {
   if (req.method === 'GET') {
     try {
       if (!fs.existsSync(filePath)) {
-        return res.status(200).json({ matches: [], news: [] });
+        return res.status(200).json({ matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } });
       }
       const jsonData = fs.readFileSync(filePath, 'utf8');
       return res.status(200).json(JSON.parse(jsonData));
     } catch (error) {
-      console.error('Read Error:', error);
-      return res.status(500).json({ error: 'Failed to read data', details: error.message });
+      return res.status(500).json({ error: 'Failed to read data' });
     }
   }
 
   if (req.method === 'POST') {
     try {
-      let currentData = { matches: [], news: [] };
-      
-      if (fs.existsSync(filePath)) {
-        currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const { type, category, item } = req.body;
+
+      if (type === 'galleries') {
+        if (!currentData.galleries[category]) currentData.galleries[category] = [];
+        const newItem = { id: Date.now(), ...item };
+        currentData.galleries[category].push(newItem);
+      } else {
+        if (!currentData[type]) return res.status(400).json({ error: 'Invalid type' });
+        const newItem = { id: Date.now(), ...item };
+        currentData[type].push(newItem);
       }
-
-      const { type, item } = req.body; // type: 'matches' or 'news'
-
-      if (!type || !item || !currentData[type]) {
-        return res.status(400).json({ error: 'Invalid data type or missing item' });
-      }
-
-      const newItem = {
-        id: Date.now(),
-        ...item
-      };
-
-      currentData[type].push(newItem);
       
       fs.writeFileSync(filePath, JSON.stringify(currentData, null, 2));
-
-      return res.status(200).json(newItem);
+      return res.status(200).json({ success: true });
     } catch (error) {
-      console.error('Write Error:', error);
-      return res.status(500).json({ error: 'Failed to save data', details: error.message });
+      return res.status(500).json({ error: 'Failed to save data' });
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    try {
+      const { type, category, id } = req.query;
+      let currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+      if (type === 'galleries') {
+        currentData.galleries[category] = currentData.galleries[category].filter(i => i.id.toString() !== id.toString());
+      } else {
+        currentData[type] = currentData[type].filter(i => i.id.toString() !== id.toString());
+      }
+
+      fs.writeFileSync(filePath, JSON.stringify(currentData, null, 2));
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      return res.status(500).json({ error: 'Failed to delete data' });
     }
   }
 
