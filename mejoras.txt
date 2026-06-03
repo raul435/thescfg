@@ -1,10 +1,12 @@
 crear pestana de admin para agregar y actulizar cosas como partidos y noticias ✅
 
 -quitar y agregar botones
-    quitar de linea blanca Programs y Join us. ✅
-    quitar de linea azul tscfg. ✅
-    agregar en linea azul boton para tienda (dejar pendiente el link). ✅
-    agregar boton en linea blanca "meet the owner" despues del boton the Club ✅
+    quitar get started y learn now.
+    agregar en linea blanca boton de membresias con su informacion.
+
+-register now
+    lleva al registro de membresia.
+    
     
 -Men's 
     Agregar pestana que contenga los programas de entrenamiento y partidos, como objetivos, horarios y foto del equipo. ✅
@@ -31,3 +33,9 @@ crear pestana de admin para agregar y actulizar cosas como partidos y noticias �
 
 -agregar area de matches
     aqui apareceran los partidos ✅
+
+-dividir membresias en sus pestanas 
+-crear pestanas de registro.
+-descripcion de membrsia.
+-pestanas para llenar formato(sponsor y membresias).
+-base de datos.
