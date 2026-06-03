@@ -77,14 +77,20 @@
         const response = await fetch('/api/data', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'matches', item })
+          body: JSON.stringify({ type: 'matches', category, item })
         });
+        const result = await response.json();
         if (response.ok) {
           alert('Update added successfully!');
           event.target.reset();
           loadExistingContent();
+        } else {
+          alert('Error: ' + (result.message || result.error || 'Failed to add'));
         }
-      } catch (error) { console.error(error); }
+      } catch (error) { 
+        console.error(error);
+        alert('Network error. Are you running a server?');
+      }
     }
 
     async function handleNewsSubmit(event) {
@@ -93,6 +99,7 @@
       const fileInput = event.target.elements.media;
       let mediaUrl = '';
       if (fileInput.files[0]) {
+        if (fileInput.files[0].size > 4 * 1024 * 1024) return alert('File too large (max 4MB)');
         const reader = new FileReader();
         const filePromise = new Promise(r => reader.onload = () => r(reader.result));
         reader.readAsDataURL(fileInput.files[0]);
@@ -105,18 +112,26 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'news', item })
         });
+        const result = await response.json();
         if (response.ok) {
           alert('News published!');
           event.target.reset();
           loadExistingContent();
+        } else {
+          alert('Error: ' + (result.message || result.error || 'Failed to publish'));
         }
-      } catch (error) { console.error(error); }
+      } catch (error) { 
+        console.error(error);
+        alert('Network error.');
+      }
     }
 
     async function handleGallerySubmit(event, category) {
       event.preventDefault();
       const fileInput = event.target.elements.photo;
       if (!fileInput.files[0]) return;
+      if (fileInput.files[0].size > 4 * 1024 * 1024) return alert('File too large (max 4MB)');
+      
       const reader = new FileReader();
       reader.onload = async function() {
         try {
@@ -125,12 +140,15 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'galleries', category, item: { url: reader.result } })
           });
+          const result = await response.json();
           if (response.ok) {
             alert('Photo uploaded!');
             event.target.reset();
             loadExistingContent();
+          } else {
+            alert('Error: ' + (result.message || result.error || 'Upload failed'));
           }
-        } catch (error) { console.error(error); }
+        } catch (error) { console.error(error); alert('Network error.'); }
       };
       reader.readAsDataURL(fileInput.files[0]);
     }
@@ -138,6 +156,7 @@
     async function loadExistingContent() {
       try {
         const response = await fetch('/api/data');
+        if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         const categories = ['main', 'mens', 'womens', 'academy', 'goalkeepers'];
         
@@ -152,7 +171,7 @@
 
           if (data.matches) {
             data.matches.filter(m => m.category === cat).forEach(m => 
-              container.appendChild(createItemEl('matches', 'EVENT', m.title, `${m.date} @ ${m.location}`, m.id))
+              container.appendChild(createItemEl('matches', 'EVENT', m.title, `${m.date} @ ${m.location}`, m.id, cat))
             );
           }
 
@@ -164,7 +183,14 @@
           
           if (container.children.length === 0) container.innerHTML = '<p style="color:#999; font-style:italic;">No items here.</p>';
         });
-      } catch (e) { console.error(e); }
+      } catch (e) { 
+        console.error(e);
+        const categories = ['main', 'mens', 'womens', 'academy', 'goalkeepers'];
+        categories.forEach(cat => {
+          const container = document.getElementById('manage-' + cat);
+          if (container) container.innerHTML = '<p style="color:red;">Error loading content. Check server.</p>';
+        });
+      }
     }
 
     function createItemEl(type, label, title, subtitle, id, category, imgUrl) {
@@ -177,16 +203,25 @@
       div.style.alignItems = 'center';
       div.style.background = '#f9f9f9';
       div.style.maxWidth = 'none';
+      div.style.textAlign = 'left';
       let media = imgUrl ? `<img src="${imgUrl}" style="height:40px;width:40px;object-fit:cover;margin-right:15px;border-radius:4px;">` : '';
-      div.innerHTML = `<div style="display:flex;align-items:center;">${media}<div><small>[${label}]</small> <strong>${title}</strong><br><small>${subtitle}</small></div></div>
+      div.innerHTML = `<div style="display:flex;align-items:center;">${media}<div><small style="color:var(--chivas-red);font-weight:700;">[${label}]</small> <strong>${title}</strong><br><small>${subtitle}</small></div></div>
                        <button onclick="deleteItem('${type}', '${category}', '${id}')" class="btn" style="padding:5px 10px;font-size:0.7rem;background:#333;">Delete</button>`;
       return div;
     }
 
     async function deleteItem(type, category, id) {
       if (!confirm('Delete this item?')) return;
-      await fetch(`/api/data?type=${type}&category=${category}&id=${id}`, { method: 'DELETE' });
-      loadExistingContent();
+      try {
+        const response = await fetch(`/api/data?type=${type}&category=${category}&id=${id}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (response.ok) {
+          alert('Item deleted.');
+          loadExistingContent();
+        } else {
+          alert('Error: ' + (result.message || result.error || 'Failed to delete'));
+        }
+      } catch (e) { alert('Network error.'); }
     }
 
     window.onload = function() {
