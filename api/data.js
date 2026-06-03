@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Vercel KV REST API configuration
-const KV_URL = process.env.KV_REST_API_URL;
-const KV_TOKEN = process.env.KV_REST_API_TOKEN;
+const KV_URL = process.env.KV_REST_API_URL || "https://aunt-fact-hyperclear-53205.upstash.io"; // Use REST URL for Upstash/Redis
+const KV_TOKEN = process.env.KV_REST_API_TOKEN; 
 
 module.exports = async (req, res) => {
   try {
@@ -66,6 +66,11 @@ module.exports = async (req, res) => {
           throw new Error(`KV Write failed (${response.status}): ${errText}`);
         }
         return true;
+      }
+      
+      // If we are in production and KV is not configured, throw a clear error
+      if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+        throw new Error('Database (Vercel KV) not configured. Please connect a Storage KV database in your Vercel Dashboard.');
       }
       
       try {
