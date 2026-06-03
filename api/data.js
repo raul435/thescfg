@@ -16,57 +16,79 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
+  const initialStructure = { 
+    matches: [], 
+    news: [], 
+    galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } 
+  };
+
   // Helper to fetch from Vercel KV
   const kvFetch = async (command, ...args) => {
-    if (!KV_URL || !KV_TOKEN) return null;
+    if (!KV_URL || !KV_TOKEN) {
+      console.log('KV credentials missing');
+      return null;
+    }
     try {
-      const response = await fetch(`${KV_URL}/${command}/${args.join('/')}`, {
+      const url = `${KV_URL}/${command}/${args.join('/')}`;
+      const response = await fetch(url, {
         headers: { Authorization: `Bearer ${KV_TOKEN}` }
       });
       const data = await response.json();
+      if (data.error) {
+        console.error('KV API Error:', data.error);
+        return null;
+      }
       return data.result;
     } catch (error) {
-      console.error('KV Error:', error);
+      console.error('KV Fetch Exception:', error);
       return null;
     }
   };
 
   const readData = async () => {
-    // Try KV first if available
     if (KV_URL && KV_TOKEN) {
+      console.log('Attempting to read from KV...');
       const data = await kvFetch('get', 'site_data');
-      if (data) return typeof data === 'string' ? JSON.parse(data) : data;
+      if (data) {
+        try {
+          return typeof data === 'string' ? JSON.parse(data) : data;
+        } catch (e) {
+          console.error('JSON Parse error from KV:', e);
+          return data; // It might already be an object
+        }
+      }
+      console.log('KV returned empty, using initial structure');
+      return initialStructure;
     }
 
     // Fallback to local file
     try {
-      if (!fs.existsSync(filePath)) {
-        return { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
-      }
+      if (!fs.existsSync(filePath)) return initialStructure;
       const jsonData = fs.readFileSync(filePath, 'utf8');
-      return jsonData ? JSON.parse(jsonData) : { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
+      return jsonData ? JSON.parse(jsonData) : initialStructure;
     } catch (error) {
-      return { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] } };
+      return initialStructure;
     }
   };
 
   const writeData = async (data) => {
-    // Write to KV if available
     if (KV_URL && KV_TOKEN) {
+      console.log('Attempting to write to KV...');
       try {
         const response = await fetch(`${KV_URL}/set/site_data`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${KV_TOKEN}` },
           body: JSON.stringify(data)
         });
-        return response.ok;
+        const result = await response.json();
+        console.log('KV Write result:', result);
+        return response.ok && !result.error;
       } catch (error) {
-        console.error('KV Write Error:', error);
+        console.error('KV Write Exception:', error);
         return false;
       }
     }
 
-    // Fallback to local file
     try {
       fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
       return true;
@@ -83,11 +105,17 @@ module.exports = async (req, res) => {
   if (req.method === 'POST') {
     try {
       const currentData = await readData();
-      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const { type, category, item } = body;
+      let body;
+      try {
+        body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      } catch (e) {
+        body = req.body;
+      }
+      
+      const { type, category, item } = body || {};
 
       if (!type || !item) {
-        return res.status(400).json({ error: 'Missing type or item' });
+        return res.status(400).json({ error: 'Missing type or item', received: body });
       }
 
       if (type === 'galleries') {
@@ -102,13 +130,15 @@ module.exports = async (req, res) => {
         currentData[type].push(newItem);
       }
       
-      if (await writeData(currentData)) {
+      const success = await writeData(currentData);
+      if (success) {
         return res.status(200).json({ success: true });
       } else {
-        return res.status(500).json({ error: 'Failed to save data. Make sure KV is configured in Vercel.' });
+        return res.status(500).json({ error: 'Failed to save to database. Check Vercel logs.' });
       }
     } catch (error) {
-      return res.status(500).json({ error: 'Failed to process request: ' + error.message });
+      console.error('POST Process error:', error);
+      return res.status(500).json({ error: 'Server error: ' + error.message });
     }
   }
 
@@ -132,10 +162,10 @@ module.exports = async (req, res) => {
       if (await writeData(currentData)) {
         return res.status(200).json({ success: true });
       } else {
-        return res.status(500).json({ error: 'Failed to delete data' });
+        return res.status(500).json({ error: 'Failed to delete from database' });
       }
     } catch (error) {
-      return res.status(500).json({ error: 'Failed to process delete: ' + error.message });
+      return res.status(500).json({ error: 'Delete error: ' + error.message });
     }
   }
 
