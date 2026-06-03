@@ -74,8 +74,9 @@
           <li><a href="index.html#matches">Matches</a></li>
           <li><a href="index.html#about">The Club</a></li>
           <li><a href="index.html#owner">Meet the Owner</a></li>
+          <li><a href="memberships.html" target="_blank">Memberships</a></li>
         </ul>
-        <a href="index.html#contact" class="btn">Register Now</a>
+        <a href="register.html" class="btn">Register Now</a>
       </div>
     </div>
   </nav>
@@ -160,10 +161,18 @@
         
         // Load Matches
         const matchContainer = document.getElementById('dynamic-matches');
-        const categoryMatches = data.matches.filter(m => m.category === 'gk');
+        const categoryMatches = data.matches.filter(m => m.category === 'goalkeepers');
         if (categoryMatches.length > 0) {
           matchContainer.innerHTML = categoryMatches.map(m => `
-            <p><strong>${m.date}:</strong> ${m.title} (${m.location})</p>
+            <div class="card" style="background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-top: 5px solid var(--chivas-blue);">
+              <div class="card-body" style="padding: 25px;">
+                <span style="font-weight: 800; color: var(--chivas-red); font-size: 0.8rem; text-transform: uppercase;">GK Clinic / Event</span>
+                <h4 style="color: var(--chivas-blue); margin-top: 10px; margin-bottom: 10px; text-transform: uppercase;">${m.title}</h4>
+                <p style="font-size: 0.9rem;"><strong>Date:</strong> ${m.date}</p>
+                <p style="font-size: 0.9rem;"><strong>Time:</strong> ${m.time}</p>
+                <p style="font-size: 0.9rem;"><strong>Location:</strong> ${m.location}</p>
+              </div>
+            </div>
           `).join('');
         }
 

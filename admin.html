@@ -47,20 +47,25 @@
     #admin-content { display: none; }
   </style>
   <script>
-    let activeGalleryCategory = 'mens';
-
-    function setGalleryCategory(category) {
-      activeGalleryCategory = category;
-      document.querySelectorAll('.gallery-tab-btn').forEach(btn => {
-        btn.style.background = btn.dataset.category === category ? 'var(--chivas-red)' : '#333';
+    function showSection(sectionId) {
+      document.querySelectorAll('.admin-tab-content').forEach(section => {
+        section.style.display = 'none';
       });
+      document.getElementById('section-' + sectionId).style.display = 'block';
+      
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.style.background = '#333';
+      });
+      document.getElementById('btn-' + sectionId).style.background = 'var(--chivas-red)';
+      
+      loadExistingContent();
     }
 
-    async function handleMatchSubmit(event) {
+    async function handleMatchSubmit(event, category) {
       event.preventDefault();
       const formData = new FormData(event.target);
       const item = {
-        category: formData.get('category'),
+        category: category,
         title: formData.get('title'),
         location: formData.get('location'),
         date: formData.get('date'),
@@ -74,100 +79,58 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'matches', item })
         });
-        const result = await response.json();
         if (response.ok) {
-          alert('Match added successfully!');
+          alert('Update added successfully!');
           event.target.reset();
           loadExistingContent();
-        } else {
-          alert('Failed to add match: ' + (result.error || 'Unknown error'));
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error connecting to API. Please check console.');
-      }
+      } catch (error) { console.error(error); }
     }
 
     async function handleNewsSubmit(event) {
       event.preventDefault();
       const formData = new FormData(event.target);
       const fileInput = event.target.elements.media;
-      
       let mediaUrl = '';
       if (fileInput.files[0]) {
-        // Warning for large files
-        if (fileInput.files[0].size > 4 * 1024 * 1024) {
-          alert('File is too large (max 4MB). Large files may fail on serverless environments.');
-        }
-
         const reader = new FileReader();
-        const filePromise = new Promise((resolve) => {
-          reader.onload = () => resolve(reader.result);
-        });
+        const filePromise = new Promise(r => reader.onload = () => r(reader.result));
         reader.readAsDataURL(fileInput.files[0]);
         mediaUrl = await filePromise;
       }
-
-      const item = {
-        headline: formData.get('headline'),
-        content: formData.get('content'),
-        media_url: mediaUrl
-      };
-
+      const item = { headline: formData.get('headline'), content: formData.get('content'), media_url: mediaUrl };
       try {
         const response = await fetch('/api/data', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'news', item })
         });
-        const result = await response.json();
         if (response.ok) {
-          alert('News added successfully!');
+          alert('News published!');
           event.target.reset();
           loadExistingContent();
-        } else {
-          alert('Failed to add news: ' + (result.error || 'Unknown error'));
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error connecting to API.');
-      }
+      } catch (error) { console.error(error); }
     }
 
-    async function handleGallerySubmit(event) {
+    async function handleGallerySubmit(event, category) {
       event.preventDefault();
       const fileInput = event.target.elements.photo;
-      if (!fileInput.files[0]) return alert('Select a photo first.');
-
-      if (fileInput.files[0].size > 4 * 1024 * 1024) {
-        alert('File is too large (max 4MB).');
-      }
-
+      if (!fileInput.files[0]) return;
       const reader = new FileReader();
       reader.onload = async function() {
-        const base64String = reader.result;
         try {
           const response = await fetch('/api/data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              type: 'galleries', 
-              category: activeGalleryCategory,
-              item: { url: base64String } 
-            })
+            body: JSON.stringify({ type: 'galleries', category, item: { url: reader.result } })
           });
-          const result = await response.json();
           if (response.ok) {
-            alert('Photo uploaded to ' + activeGalleryCategory + ' gallery!');
+            alert('Photo uploaded!');
             event.target.reset();
             loadExistingContent();
-          } else {
-            alert('Upload failed: ' + (result.error || 'Unknown error'));
           }
-        } catch (error) {
-          console.error(error);
-          alert('Error uploading.');
-        }
+        } catch (error) { console.error(error); }
       };
       reader.readAsDataURL(fileInput.files[0]);
     }
@@ -176,112 +139,62 @@
       try {
         const response = await fetch('/api/data');
         const data = await response.json();
+        const categories = ['main', 'mens', 'womens', 'academy', 'goalkeepers'];
         
-        const listContainer = document.getElementById('manage-list');
-        listContainer.innerHTML = '';
+        categories.forEach(cat => {
+          const container = document.getElementById('manage-' + cat);
+          if (!container) return;
+          container.innerHTML = '';
 
-        // Render Matches
-        if (data.matches && Array.isArray(data.matches)) {
-          data.matches.forEach(match => {
-            const div = document.createElement('div');
-            div.className = 'admin-panel';
-            div.style.marginBottom = '10px';
-            div.style.textAlign = 'left';
-            div.style.display = 'flex';
-            div.style.justifyContent = 'space-between';
-            div.style.alignItems = 'center';
-            div.innerHTML = `
-              <div>
-                <strong>[MATCH] ${match.title || 'Untitled'}</strong> (${match.category || 'No Category'})<br>
-                <small>${match.date || ''} @ ${match.location || ''}</small>
-              </div>
-              <button onclick="deleteItem('matches', '', '${match.id}')" class="btn" style="padding: 5px 15px; font-size: 0.7rem; background: #333;">Delete</button>
-            `;
-            listContainer.appendChild(div);
-          });
-        }
+          if (cat === 'main' && data.news) {
+            data.news.forEach(item => container.appendChild(createItemEl('news', 'NEWS', item.headline, '', item.id, '', item.media_url)));
+          }
 
-        // Render News
-        if (data.news && Array.isArray(data.news)) {
-          data.news.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'admin-panel';
-            div.style.marginBottom = '10px';
-            div.style.textAlign = 'left';
-            div.style.display = 'flex';
-            div.style.justifyContent = 'space-between';
-            div.style.alignItems = 'center';
-            div.innerHTML = `
-              <div>
-                <strong>[NEWS] ${item.headline || 'No Headline'}</strong><br>
-                <small>${(item.content || '').substring(0, 50)}...</small>
-              </div>
-              <button onclick="deleteItem('news', '', '${item.id}')" class="btn" style="padding: 5px 15px; font-size: 0.7rem; background: #333;">Delete</button>
-            `;
-            listContainer.appendChild(div);
-          });
-        }
+          if (data.matches) {
+            data.matches.filter(m => m.category === cat).forEach(m => 
+              container.appendChild(createItemEl('matches', 'EVENT', m.title, `${m.date} @ ${m.location}`, m.id))
+            );
+          }
 
-        // Render Galleries
-        if (data.galleries) {
-          Object.keys(data.galleries).forEach(cat => {
-            if (Array.isArray(data.galleries[cat])) {
-              data.galleries[cat].forEach(img => {
-                const div = document.createElement('div');
-                div.className = 'admin-panel';
-                div.style.marginBottom = '10px';
-                div.style.textAlign = 'left';
-                div.style.display = 'flex';
-                div.style.justifyContent = 'space-between';
-                div.style.alignItems = 'center';
-                div.innerHTML = `
-                  <div style="display:flex; align-items:center; gap:15px;">
-                    <img src="${img.url}" style="height:40px; width:40px; object-fit:cover; border-radius:4px;" onerror="this.src='https://via.placeholder.com/40'">
-                    <div><strong>[GALLERY] ${cat}</strong></div>
-                  </div>
-                  <button onclick="deleteItem('galleries', '${cat}', '${img.id}')" class="btn" style="padding: 5px 15px; font-size: 0.7rem; background: #333;">Delete</button>
-                `;
-                listContainer.appendChild(div);
-              });
-            }
-          });
-        }
+          if (data.galleries && data.galleries[cat]) {
+            data.galleries[cat].forEach(img => 
+              container.appendChild(createItemEl('galleries', 'GALLERY', 'Photo', '', img.id, cat, img.url))
+            );
+          }
+          
+          if (container.children.length === 0) container.innerHTML = '<p style="color:#999; font-style:italic;">No items here.</p>';
+        });
+      } catch (e) { console.error(e); }
+    }
 
-      } catch (error) {
-        console.error('Error loading content:', error);
-      }
+    function createItemEl(type, label, title, subtitle, id, category, imgUrl) {
+      const div = document.createElement('div');
+      div.className = 'admin-panel';
+      div.style.marginBottom = '10px';
+      div.style.padding = '15px';
+      div.style.display = 'flex';
+      div.style.justifyContent = 'space-between';
+      div.style.alignItems = 'center';
+      div.style.background = '#f9f9f9';
+      div.style.maxWidth = 'none';
+      let media = imgUrl ? `<img src="${imgUrl}" style="height:40px;width:40px;object-fit:cover;margin-right:15px;border-radius:4px;">` : '';
+      div.innerHTML = `<div style="display:flex;align-items:center;">${media}<div><small>[${label}]</small> <strong>${title}</strong><br><small>${subtitle}</small></div></div>
+                       <button onclick="deleteItem('${type}', '${category}', '${id}')" class="btn" style="padding:5px 10px;font-size:0.7rem;background:#333;">Delete</button>`;
+      return div;
     }
 
     async function deleteItem(type, category, id) {
-      if (!confirm('Are you sure you want to delete this item?')) return;
-
-      try {
-        const response = await fetch(`/api/data?type=${type}&category=${category}&id=${id}`, {
-          method: 'DELETE'
-        });
-        const result = await response.json();
-        if (response.ok) {
-          alert('Item deleted.');
-          loadExistingContent();
-        } else {
-          alert('Failed to delete item: ' + (result.error || 'Unknown error'));
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error connecting to API.');
-      }
+      if (!confirm('Delete this item?')) return;
+      await fetch(`/api/data?type=${type}&category=${category}&id=${id}`, { method: 'DELETE' });
+      loadExistingContent();
     }
 
-    // Simple local password check
     window.onload = function() {
-      const password = prompt("Please enter admin password:");
+      const password = prompt("Admin password:");
       if (password === "admin123") {
         document.getElementById("admin-content").style.display = "block";
-        loadExistingContent();
-      } else {
-        alert("Incorrect password. Redirecting to home.");
-        window.location.href = "index.html";
-      }
+        showSection('main');
+      } else { window.location.href = "index.html"; }
     };
   </script>
 </head>
@@ -294,7 +207,6 @@
           <li><a href="womens.html">Women's</a></li>
           <li><a href="academy.html">Academy</a></li>
           <li><a href="goalkeepers.html">Goalkeepers</a></li>
-          <li><a href="#">Tienda</a></li>
         </ul>
       </div>
     </div>
@@ -319,71 +231,117 @@
     <section class="section">
       <div class="container" style="text-align: center;">
         <h2 class="section-title">Admin Dashboard</h2>
-        <p style="margin-bottom: 40px;">Manage website content: Update upcoming matches, news, and galleries.</p>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-          <!-- Matches Form -->
+        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; flex-wrap: wrap;">
+          <button class="tab-btn btn" onclick="showSection('main')" id="btn-main">Main</button>
+          <button class="tab-btn btn" onclick="showSection('mens')" id="btn-mens">Mens</button>
+          <button class="tab-btn btn" onclick="showSection('womens')" id="btn-womens">Womens</button>
+          <button class="tab-btn btn" onclick="showSection('academy')" id="btn-academy">Academy</button>
+          <button class="tab-btn btn" onclick="showSection('goalkeepers')" id="btn-goalkeepers">Goalkeepers</button>
+        </div>
+
+        <div id="section-main" class="admin-tab-content">
           <div class="admin-panel">
-            <form class="admin-form" onsubmit="handleMatchSubmit(event)">
-              <h3>Add Match / Training</h3>
-              <select name="category" required>
-                <option value="">Select Category</option>
-                <option value="mens">Men's Team</option>
-                <option value="womens">Women's Team</option>
-                <option value="academy">Academy</option>
-                <option value="goalkeepers">Goalkeepers</option>
-              </select>
-              <input type="text" name="title" placeholder="Opponent / Event Name" required>
+            <h3>Home News</h3>
+            <form class="admin-form" onsubmit="handleNewsSubmit(event)">
+              <input type="text" name="headline" placeholder="Headline" required>
+              <textarea name="content" placeholder="Content" rows="4" required></textarea>
+              <input type="file" name="media" accept="image/*,video/*">
+              <button type="submit" class="btn">Publish</button>
+            </form>
+          </div>
+          <div id="manage-main" style="margin-top:30px;"></div>
+        </div>
+
+        <div id="section-mens" class="admin-tab-content" style="display:none;">
+          <div class="admin-panel">
+            <h3>Mens Match</h3>
+            <form class="admin-form" onsubmit="handleMatchSubmit(event, 'mens')">
+              <input type="text" name="title" placeholder="Opponent" required>
               <input type="text" name="location" placeholder="Location" required>
               <input type="date" name="date" required>
               <input type="time" name="time" required>
-              <textarea name="details" placeholder="Additional Details" rows="3"></textarea>
-              <button type="submit" class="btn">Post Update</button>
+              <button type="submit" class="btn">Add Match</button>
             </form>
           </div>
-
-          <!-- News Form -->
-          <div class="admin-panel" style="background: white; border: 1px solid #eee;">
-            <h3>Add News Update</h3>
-            <form class="admin-form" onsubmit="handleNewsSubmit(event)">
-              <input type="text" name="headline" placeholder="Headline" required>
-              <textarea name="content" placeholder="News Content" rows="6" required></textarea>
-              <input type="file" name="media" accept="image/*,video/*" style="font-size: 0.8rem;">
-              <button type="submit" class="btn">Publish News</button>
+          <div class="admin-panel" style="margin-top:20px;background:var(--chivas-blue);color:white;">
+            <h3>Mens Gallery</h3>
+            <form class="admin-form" onsubmit="handleGallerySubmit(event, 'mens')">
+              <input type="file" name="photo" accept="image/*" required>
+              <button type="submit" class="btn">Upload</button>
             </form>
           </div>
+          <div id="manage-mens" style="margin-top:30px;"></div>
         </div>
 
-        <!-- Gallery Section -->
-        <div class="admin-panel" style="margin-top: 40px; background: var(--chivas-blue); color: white;">
-          <h3 style="margin-bottom: 20px;">Upload Gallery Photos</h3>
-          <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
-            <button class="gallery-tab-btn btn" style="background: var(--chivas-red); padding: 8px 15px; font-size: 0.8rem;" data-category="mens" onclick="setGalleryCategory('mens')">Men's</button>
-            <button class="gallery-tab-btn btn" style="background: #333; padding: 8px 15px; font-size: 0.8rem;" data-category="womens" onclick="setGalleryCategory('womens')">Women's</button>
-            <button class="gallery-tab-btn btn" style="background: #333; padding: 8px 15px; font-size: 0.8rem;" data-category="academy" onclick="setGalleryCategory('academy')">Academy</button>
-            <button class="gallery-tab-btn btn" style="background: #333; padding: 8px 15px; font-size: 0.8rem;" data-category="goalkeepers" onclick="setGalleryCategory('goalkeepers')">Goalkeepers</button>
+        <div id="section-womens" class="admin-tab-content" style="display:none;">
+          <div class="admin-panel">
+            <h3>Womens Match</h3>
+            <form class="admin-form" onsubmit="handleMatchSubmit(event, 'womens')">
+              <input type="text" name="title" placeholder="Opponent" required>
+              <input type="text" name="location" placeholder="Location" required>
+              <input type="date" name="date" required>
+              <input type="time" name="time" required>
+              <button type="submit" class="btn">Add Match</button>
+            </form>
           </div>
-          <form class="admin-form" onsubmit="handleGallerySubmit(event)" style="max-width: 400px; margin: 0 auto;">
-            <input type="file" name="photo" accept="image/*" required style="background: white; color: #333;">
-            <button type="submit" class="btn" style="background: var(--chivas-red);">Upload Photo</button>
-          </form>
+          <div class="admin-panel" style="margin-top:20px;background:var(--chivas-blue);color:white;">
+            <h3>Womens Gallery</h3>
+            <form class="admin-form" onsubmit="handleGallerySubmit(event, 'womens')">
+              <input type="file" name="photo" accept="image/*" required>
+              <button type="submit" class="btn">Upload</button>
+            </form>
+          </div>
+          <div id="manage-womens" style="margin-top:30px;"></div>
         </div>
 
-        <div style="margin-top: 60px;">
-          <h2 class="section-title">Manage Content</h2>
-          <p style="margin-bottom: 20px;">View and delete existing matches, news, and gallery photos.</p>
-          <div id="manage-list">
-            <!-- Items will be loaded here -->
+        <div id="section-academy" class="admin-tab-content" style="display:none;">
+          <div class="admin-panel">
+            <h3>Academy Event</h3>
+            <form class="admin-form" onsubmit="handleMatchSubmit(event, 'academy')">
+              <input type="text" name="title" placeholder="Event" required>
+              <input type="text" name="location" placeholder="Location" required>
+              <input type="date" name="date" required>
+              <input type="time" name="time" required>
+              <button type="submit" class="btn">Add Event</button>
+            </form>
           </div>
+          <div class="admin-panel" style="margin-top:20px;background:var(--chivas-blue);color:white;">
+            <h3>Academy Gallery</h3>
+            <form class="admin-form" onsubmit="handleGallerySubmit(event, 'academy')">
+              <input type="file" name="photo" accept="image/*" required>
+              <button type="submit" class="btn">Upload</button>
+            </form>
+          </div>
+          <div id="manage-academy" style="margin-top:30px;"></div>
+        </div>
+
+        <div id="section-goalkeepers" class="admin-tab-content" style="display:none;">
+          <div class="admin-panel">
+            <h3>GK Event</h3>
+            <form class="admin-form" onsubmit="handleMatchSubmit(event, 'goalkeepers')">
+              <input type="text" name="title" placeholder="Clinic" required>
+              <input type="text" name="location" placeholder="Location" required>
+              <input type="date" name="date" required>
+              <input type="time" name="time" required>
+              <button type="submit" class="btn">Add Event</button>
+            </form>
+          </div>
+          <div class="admin-panel" style="margin-top:20px;background:var(--chivas-blue);color:white;">
+            <h3>GK Gallery</h3>
+            <form class="admin-form" onsubmit="handleGallerySubmit(event, 'goalkeepers')">
+              <input type="file" name="photo" accept="image/*" required>
+              <button type="submit" class="btn">Upload</button>
+            </form>
+          </div>
+          <div id="manage-goalkeepers" style="margin-top:30px;"></div>
         </div>
       </div>
     </section>
 
     <footer>
-      <div class="container">
-        <div class="copyright">
-          <p>&copy; 2026 TSCFG • Internal Admin Use Only</p>
-        </div>
+      <div class="container" style="text-align:center;">
+        <p>&copy; 2026 TSCFG Admin</p>
       </div>
     </footer>
   </div>
