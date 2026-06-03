@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
-module.exports = async (req, res) => {
-  // Pull variables inside the handler
-  const DB_URL = process.env.TSCFG_URL;
-  const DB_TOKEN = process.env.TSCFG_TOKEN;
+// Temporary hardcoded credentials for diagnostic purposes
+const DB_URL = "https://aunt-fact-hyperclear-53205.upstash.io";
+const DB_TOKEN = "Ls7EkTutF7jghRzL8oLEcBkWVOrDnP7c";
 
+module.exports = async (req, res) => {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
@@ -13,23 +13,8 @@ module.exports = async (req, res) => {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Specific validation to know which one is missing
-  if (!DB_URL || !DB_TOKEN) {
-    const missing = [];
-    if (!DB_URL) missing.push("TSCFG_URL");
-    if (!DB_TOKEN) missing.push("TSCFG_TOKEN");
-    
-    return res.status(500).json({ 
-      error: "Database configuration incomplete", 
-      details: `Missing: ${missing.join(', ')}. Please ensure these are set in Vercel Settings -> Environment Variables and then REDEPLOY.` 
-    });
-  }
-
   const kvRequest = async (path, method = 'GET', body = null) => {
-    // Ensure URL doesn't have double slashes if user added one at the end
-    const baseUrl = DB_URL.endsWith('/') ? DB_URL.slice(0, -1) : DB_URL;
-    const url = `${baseUrl}${path}`;
-    
+    const url = `${DB_URL}${path}`;
     const options = {
       method,
       headers: { 'Authorization': `Bearer ${DB_TOKEN}` }
@@ -48,6 +33,7 @@ module.exports = async (req, res) => {
   };
 
   try {
+    // 1. GET DATA
     if (req.method === 'GET') {
       const raw = await kvRequest('/get/site_data');
       let data = raw;
@@ -61,15 +47,18 @@ module.exports = async (req, res) => {
       return res.status(200).json(data);
     }
 
+    // 2. POST DATA
     if (req.method === 'POST') {
       const raw = await kvRequest('/get/site_data');
       let currentData = typeof raw === 'string' ? JSON.parse(raw) : (raw || { matches: [], news: [], galleries: {}, registrations: [] });
       
       let payload = req.body;
-      if (typeof payload === 'string' && payload.trim()) payload = JSON.parse(payload);
+      if (typeof payload === 'string' && payload.trim()) {
+        try { payload = JSON.parse(payload); } catch(e) { payload = {}; }
+      }
       
       const { type, category, item } = payload || {};
-      if (!type || !item) return res.status(400).json({ error: "Missing type or item" });
+      if (!type || !item) return res.status(400).json({ error: "Missing data" });
 
       if (type === 'galleries') {
         if (!currentData.galleries) currentData.galleries = {};
@@ -84,6 +73,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: true });
     }
 
+    // 3. DELETE DATA
     if (req.method === 'DELETE') {
       const { type, category, id } = req.query;
       const raw = await kvRequest('/get/site_data');
@@ -102,7 +92,6 @@ module.exports = async (req, res) => {
     }
 
   } catch (err) {
-    console.error("API Error:", err);
     return res.status(500).json({ error: err.message });
   }
 };
