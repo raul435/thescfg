@@ -1,11 +1,19 @@
 const fs = require('fs');
 const path = require('path');
 
-// Vercel KV REST API configuration
-const KV_URL = process.env.KV_REST_API_URL || "https://aunt-fact-hyperclear-53205.upstash.io"; // Use REST URL for Upstash/Redis
-const KV_TOKEN = process.env.KV_REST_API_TOKEN; 
+// Vercel KV REST API configuration - Enhanced detection
+const KV_REST_API_URL = process.env.KV_REST_API_URL || process.env.KV_URL;
+const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN;
 
 module.exports = async (req, res) => {
+  // Diagnostic info (logged in Vercel logs)
+  console.log('API Request:', req.method, 'ENV Check:', {
+    has_url: !!KV_REST_API_URL,
+    has_token: !!KV_REST_API_TOKEN,
+    node_env: process.env.NODE_ENV,
+    is_vercel: !!process.env.VERCEL
+  });
+
   try {
     const filePath = path.join(process.cwd(), 'data.json');
 
@@ -37,11 +45,11 @@ module.exports = async (req, res) => {
 
     // Helper to fetch from Vercel KV
     const kvFetch = async (command, ...args) => {
-      if (!KV_URL || !KV_TOKEN) return null;
+      if (!KV_REST_API_URL || !KV_REST_API_TOKEN) return null;
       
-      const url = `${KV_URL}/${command}/${args.join('/')}`;
+      const url = `${KV_REST_API_URL}/${command}/${args.join('/')}`;
       const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${KV_TOKEN}` }
+        headers: { Authorization: `Bearer ${KV_REST_API_TOKEN}` }
       });
       
       if (!response.ok) {
@@ -54,10 +62,10 @@ module.exports = async (req, res) => {
     };
 
     const writeData = async (data) => {
-      if (KV_URL && KV_TOKEN) {
-        const response = await fetch(`${KV_URL}/set/site_data`, {
+      if (KV_REST_API_URL && KV_REST_API_TOKEN) {
+        const response = await fetch(`${KV_REST_API_URL}/set/site_data`, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${KV_TOKEN}` },
+          headers: { Authorization: `Bearer ${KV_REST_API_TOKEN}` },
           body: JSON.stringify(data)
         });
         
@@ -70,7 +78,10 @@ module.exports = async (req, res) => {
       
       // If we are in production and KV is not configured, throw a clear error
       if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
-        throw new Error('Database (Vercel KV) not configured. Please connect a Storage KV database in your Vercel Dashboard.');
+        const missing = [];
+        if (!KV_REST_API_URL) missing.push('KV_REST_API_URL');
+        if (!KV_REST_API_TOKEN) missing.push('KV_REST_API_TOKEN');
+        throw new Error(`Database not configured. Missing: ${missing.join(', ')}. Please redeploy or check Environment Variables in Vercel.`);
       }
       
       try {
@@ -82,7 +93,7 @@ module.exports = async (req, res) => {
     };
 
     const readData = async () => {
-      if (KV_URL && KV_TOKEN) {
+      if (KV_REST_API_URL && KV_REST_API_TOKEN) {
         const data = await kvFetch('get', 'site_data');
         if (data) {
           return typeof data === 'string' ? JSON.parse(data) : data;
