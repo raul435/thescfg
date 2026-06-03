@@ -156,7 +156,10 @@
     async function loadExistingContent() {
       try {
         const response = await fetch('/api/data');
-        if (!response.ok) throw new Error('Failed to fetch data');
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `Server returned ${response.status}`);
+        }
         const data = await response.json();
         const categories = ['main', 'mens', 'womens', 'academy', 'goalkeepers'];
         
@@ -188,7 +191,7 @@
         const categories = ['main', 'mens', 'womens', 'academy', 'goalkeepers'];
         categories.forEach(cat => {
           const container = document.getElementById('manage-' + cat);
-          if (container) container.innerHTML = '<p style="color:red;">Error loading content. Check server.</p>';
+          if (container) container.innerHTML = `<p style="color:red;">Error: ${e.message}</p>`;
         });
       }
     }
