@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
-// Temporary hardcoded credentials for diagnostic purposes
-const DB_URL = "https://aunt-fact-hyperclear-53205.upstash.io";
-const DB_TOKEN = "Ls7EkTutF7jghRzL8oLEcBkWVOrDnP7c";
-
 module.exports = async (req, res) => {
+  // Use environment variables (User must set these in Vercel)
+  const DB_URL = process.env.TSCFG_URL;
+  const DB_TOKEN = process.env.TSCFG_TOKEN;
+
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
@@ -13,33 +13,38 @@ module.exports = async (req, res) => {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  // Validate presence
+  if (!DB_URL || !DB_TOKEN) {
+    return res.status(500).json({ 
+      error: "Database configuration incomplete", 
+      details: "Please ensure TSCFG_URL (starts with https://) and TSCFG_TOKEN are set in Vercel Settings -> Environment Variables." 
+    });
+  }
+
   const kvRequest = async (path, method = 'GET', body = null) => {
-    const url = `${DB_URL}${path}`;
+    // Sanitize URL
+    const baseUrl = DB_URL.endsWith('/') ? DB_URL.slice(0, -1) : DB_URL;
+    const url = `${baseUrl}${path}`;
+    
     const options = {
       method,
       headers: { 'Authorization': `Bearer ${DB_TOKEN}` }
     };
-    if (body) {
-      options.body = JSON.stringify(body);
-    }
+    if (body) options.body = JSON.stringify(body);
 
     const response = await fetch(url, options);
     if (!response.ok) {
       const text = await response.text();
-      throw new Error(`DB Error ${response.status}: ${text}`);
+      throw new Error(`Upstash Error ${response.status}: ${text}`);
     }
     const data = await response.json();
     return data.result;
   };
 
   try {
-    // 1. GET DATA
     if (req.method === 'GET') {
       const raw = await kvRequest('/get/site_data');
-      let data = raw;
-      if (typeof raw === 'string') {
-        try { data = JSON.parse(raw); } catch(e) { data = null; }
-      }
+      let data = typeof raw === 'string' ? JSON.parse(raw) : raw;
       if (!data) {
         data = { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] }, registrations: [] };
         await kvRequest('/set/site_data', 'POST', data);
@@ -47,19 +52,14 @@ module.exports = async (req, res) => {
       return res.status(200).json(data);
     }
 
-    // 2. POST DATA
     if (req.method === 'POST') {
       const raw = await kvRequest('/get/site_data');
       let currentData = typeof raw === 'string' ? JSON.parse(raw) : (raw || { matches: [], news: [], galleries: {}, registrations: [] });
       
       let payload = req.body;
-      if (typeof payload === 'string' && payload.trim()) {
-        try { payload = JSON.parse(payload); } catch(e) { payload = {}; }
-      }
+      if (typeof payload === 'string' && payload.trim()) payload = JSON.parse(payload);
       
       const { type, category, item } = payload || {};
-      if (!type || !item) return res.status(400).json({ error: "Missing data" });
-
       if (type === 'galleries') {
         if (!currentData.galleries) currentData.galleries = {};
         if (!currentData.galleries[category]) currentData.galleries[category] = [];
@@ -73,17 +73,14 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: true });
     }
 
-    // 3. DELETE DATA
     if (req.method === 'DELETE') {
       const { type, category, id } = req.query;
       const raw = await kvRequest('/get/site_data');
       let currentData = typeof raw === 'string' ? JSON.parse(raw) : raw;
 
       if (type === 'galleries') {
-        if (currentData.galleries && currentData.galleries[category]) {
-          currentData.galleries[category] = currentData.galleries[category].filter(i => i.id.toString() !== id.toString());
-        }
-      } else if (currentData[type]) {
+        currentData.galleries[category] = currentData.galleries[category].filter(i => i.id.toString() !== id.toString());
+      } else {
         currentData[type] = currentData[type].filter(i => i.id.toString() !== id.toString());
       }
 
@@ -92,6 +89,7 @@ module.exports = async (req, res) => {
     }
 
   } catch (err) {
+    console.error("API Error:", err.message);
     return res.status(500).json({ error: err.message });
   }
 };
