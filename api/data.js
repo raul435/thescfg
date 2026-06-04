@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 // Local data file path
 const DATA_FILE = path.join(process.cwd(), 'data.json');
@@ -16,11 +17,56 @@ const getLocalData = () => {
 };
 
 const saveLocalData = (data) => {
+  // In Vercel production, the filesystem is read-only.
+  if (process.env.VERCEL) return;
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
   } catch (err) {
     console.error('Error saving local data:', err);
   }
+};
+
+const sendEmail = async (registration) => {
+  const { membership_type, full_name, dob, phone, email } = registration;
+  
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn('Email credentials missing, skipping email.');
+    return;
+  }
+
+  // SMTP Config for Hotmail/Outlook/Office365
+  const transporter = nodemailer.createTransport({
+    host: "smtp.office365.com",
+    port: 587,
+    secure: false, // Must be false for 587
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+      ciphers: 'SSLv3',
+      rejectUnauthorized: false 
+    }
+  });
+
+  const mailOptions = {
+    from: `"TSCFG Web" <${process.env.EMAIL_USER}>`,
+    to: process.env.EMAIL_TO || process.env.EMAIL_USER,
+    subject: `New Registration: ${full_name}`,
+    html: `
+      <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; max-width: 600px;">
+        <h2 style="color: #C8102E; border-bottom: 2px solid #C8102E; padding-bottom: 10px;">New Membership Registration</h2>
+        <p><strong>Name:</strong> ${full_name}</p>
+        <p><strong>Membership:</strong> ${membership_type}</p>
+        <p><strong>Date of Birth:</strong> ${dob}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p style="margin-top: 20px; font-size: 0.8rem; color: #999;">Sent from TSCFG Website</p>
+      </div>
+    `
+  };
+
+  return transporter.sendMail(mailOptions);
 };
 
 module.exports = async (req, res) => {
@@ -38,7 +84,7 @@ module.exports = async (req, res) => {
     const options = {
       method,
       headers: { 'Authorization': `Bearer ${DB_TOKEN}`, 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(5000) // 5 second timeout
+      signal: AbortSignal.timeout(5000) 
     };
     if (body) options.body = JSON.stringify(body);
 
@@ -54,7 +100,6 @@ module.exports = async (req, res) => {
     let siteData;
     let usingDB = false;
 
-    // Try to get data from DB first
     try {
       const data = await kvRequest('/get/site_data');
       if (data && data.result) {
@@ -86,26 +131,22 @@ module.exports = async (req, res) => {
         const newItem = { id: Date.now(), ...item };
         siteData[type].push(newItem);
 
-        // If it's a registration, send the email
-        if (type === 'registrations' && process.env.EMAIL_USER) {
+        if (type === 'registrations') {
           try {
             await sendEmail(item);
           } catch (emailErr) {
-            console.error('Failed to send email notification:', emailErr.message);
-            // We still proceed since the data is saved in DB
+            console.error('Email failed but registration saved:', emailErr.message);
           }
         }
       }
 
-      // Save to local always for safety
       saveLocalData(siteData);
 
-      // Try to save to DB if it was working
       if (usingDB) {
         try {
           await kvRequest('/set/site_data', 'POST', siteData);
         } catch (e) {
-          console.error('Failed to update DB after local update');
+          console.error('Failed to update DB after update');
         }
       }
 
@@ -131,7 +172,7 @@ module.exports = async (req, res) => {
         try {
           await kvRequest('/set/site_data', 'POST', siteData);
         } catch (e) {
-          console.error('Failed to update DB after local delete');
+          console.error('Failed to update DB after delete');
         }
       }
 
@@ -142,44 +183,3 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
-
-ait kvRequest('/set/site_data', 'POST', siteData);
-        } catch (e) {
-          console.error('Failed to update DB after local update');
-        }
-      }
-
-      return res.status(200).json({ success: true });
-    }
-
-    if (req.method === 'DELETE') {
-      const { type, category, id } = req.query;
-
-      if (type === 'galleries') {
-        if (siteData.galleries && siteData.galleries[category]) {
-          siteData.galleries[category] = siteData.galleries[category].filter(i => i.id.toString() !== id.toString());
-        }
-      } else {
-        if (siteData[type]) {
-          siteData[type] = siteData[type].filter(i => i.id.toString() !== id.toString());
-        }
-      }
-
-      saveLocalData(siteData);
-
-      if (usingDB) {
-        try {
-          await kvRequest('/set/site_data', 'POST', siteData);
-        } catch (e) {
-          console.error('Failed to update DB after local delete');
-        }
-      }
-
-      return res.status(200).json({ success: true });
-    }
-  } catch (err) {
-    console.error('API Error:', err.message);
-    return res.status(500).json({ error: err.message });
-  }
-};
-
