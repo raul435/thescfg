@@ -83,7 +83,18 @@ module.exports = async (req, res) => {
         siteData.galleries[category].push({ id: Date.now(), ...item });
       } else {
         if (!siteData[type]) siteData[type] = [];
-        siteData[type].push({ id: Date.now(), ...item });
+        const newItem = { id: Date.now(), ...item };
+        siteData[type].push(newItem);
+
+        // If it's a registration, send the email
+        if (type === 'registrations' && process.env.EMAIL_USER) {
+          try {
+            await sendEmail(item);
+          } catch (emailErr) {
+            console.error('Failed to send email notification:', emailErr.message);
+            // We still proceed since the data is saved in DB
+          }
+        }
       }
 
       // Save to local always for safety
@@ -93,6 +104,46 @@ module.exports = async (req, res) => {
       if (usingDB) {
         try {
           await kvRequest('/set/site_data', 'POST', siteData);
+        } catch (e) {
+          console.error('Failed to update DB after local update');
+        }
+      }
+
+      return res.status(200).json({ success: true });
+    }
+
+    if (req.method === 'DELETE') {
+      const { type, category, id } = req.query;
+
+      if (type === 'galleries') {
+        if (siteData.galleries && siteData.galleries[category]) {
+          siteData.galleries[category] = siteData.galleries[category].filter(i => i.id.toString() !== id.toString());
+        }
+      } else {
+        if (siteData[type]) {
+          siteData[type] = siteData[type].filter(i => i.id.toString() !== id.toString());
+        }
+      }
+
+      saveLocalData(siteData);
+
+      if (usingDB) {
+        try {
+          await kvRequest('/set/site_data', 'POST', siteData);
+        } catch (e) {
+          console.error('Failed to update DB after local delete');
+        }
+      }
+
+      return res.status(200).json({ success: true });
+    }
+  } catch (err) {
+    console.error('API Error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+ait kvRequest('/set/site_data', 'POST', siteData);
         } catch (e) {
           console.error('Failed to update DB after local update');
         }
