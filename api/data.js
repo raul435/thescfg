@@ -51,7 +51,7 @@ const sendEmail = async (registration) => {
 
   const mailOptions = {
     from: "onboarding@resend.dev", // Default Resend sender for new accounts
-    to: process.env.EMAIL_TO || "raullopez.tscfg@hotmail.com", // Destination email
+    to: process.env.EMAIL_TO || "jesus.hrnz@outlook.com", // Updated destination email
     subject: `REGISTRATION: ${full_name || 'New User'} - TSCFG`,
     text: `NEW REGISTRATION RECEIVED\n\nName: ${full_name}\nMembership: ${membership_type}\nDOB: ${dob}\nPhone: ${phone}\nEmail: ${email}\nDate: ${new Date().toLocaleString()}`,
     html: `
