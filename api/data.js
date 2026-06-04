@@ -38,20 +38,20 @@ const sendEmail = async (registration) => {
     return;
   }
 
-  // SMTP Config for Resend (The reliable way)
+  // SMTP Config for Resend (Using provided key)
   const transporter = nodemailer.createTransport({
     host: "smtp.resend.com",
     port: 465,
     secure: true, 
     auth: {
-      user: "resend", // This is always "resend"
-      pass: process.env.EMAIL_PASS.trim(), // Your re_... API Key
+      user: "resend",
+      pass: "re_85jtUtDh_EXPMYNVQqmuWVs3HjZkiX6R6", 
     }
   });
 
   const mailOptions = {
-    from: "onboarding@resend.dev", // Resend default for testing
-    to: process.env.EMAIL_TO || "tu-correo-aqui@hotmail.com", // Recommendation: update EMAIL_TO in Vercel
+    from: "onboarding@resend.dev",
+    to: "raullopez.tscfg@hotmail.com", 
     subject: `REGISTRATION: ${full_name || 'New User'} - TSCFG`,
     text: `NEW REGISTRATION RECEIVED\n\nName: ${full_name}\nMembership: ${membership_type}\nDOB: ${dob}\nPhone: ${phone}\nEmail: ${email}\nDate: ${new Date().toLocaleString()}`,
     html: `
