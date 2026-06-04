@@ -144,12 +144,17 @@
           body: JSON.stringify(data)
         });
 
+        const result = await response.json();
+
         if (response.ok) {
+          if (result.emailError) {
+            alert('Registration saved, but EMAIL FAILED: ' + result.emailError + '\n\nPlease check your email settings or try another account.');
+          }
           document.getElementById('registration-form').style.display = 'none';
           document.getElementById('success-message').style.display = 'block';
           window.scrollTo(0, 0);
         } else {
-          alert('There was an error submitting your registration. Please try again or contact us directly.');
+          alert('Error: ' + (result.error || 'Unknown error'));
         }
       } catch (error) {
         console.error('Error:', error);

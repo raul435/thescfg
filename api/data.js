@@ -29,24 +29,29 @@ const saveLocalData = (data) => {
 const sendEmail = async (registration) => {
   const { membership_type, full_name, dob, phone, email } = registration;
   
+  console.log('Attempting to send email for registration:', full_name);
+  console.log('EMAIL_USER exists:', !!process.env.EMAIL_USER);
+  console.log('EMAIL_PASS exists:', !!process.env.EMAIL_PASS);
+
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn('Email credentials missing, skipping email.');
+    console.error('Email credentials missing (EMAIL_USER/EMAIL_PASS), skipping email.');
     return;
   }
 
-  // SMTP Config for Hotmail/Outlook/Office365
+  // Optimized SMTP Config for Hotmail/Outlook/Office365
   const transporter = nodemailer.createTransport({
-    host: "smtp.office365.com",
+    host: "smtp-mail.outlook.com", // More standard host for Outlook
     port: 587,
-    secure: false, // Must be false for 587
+    secure: false, 
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
     tls: {
-      ciphers: 'SSLv3',
+      ciphers: 'SSLv3', // Re-adding but with cautious config or keeping it clean
       rejectUnauthorized: false 
-    }
+    },
+    requireTLS: true // Outlook often requires this
   });
 
   const mailOptions = {
@@ -67,7 +72,17 @@ const sendEmail = async (registration) => {
     `
   };
 
-  return transporter.sendMail(mailOptions);
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Error in sendMail:', error.message);
+    if (error.code === 'EAUTH') {
+      console.error('Authentication failed. Please check EMAIL_USER and EMAIL_PASS. Outlook may require "Allow SMTP AUTH" to be enabled in admin settings.');
+    }
+    throw error;
+  }
 };
 
 module.exports = async (req, res) => {
@@ -136,7 +151,13 @@ module.exports = async (req, res) => {
           try {
             await sendEmail(item);
           } catch (emailErr) {
-            console.error('Email failed but registration saved:', emailErr.message);
+            console.error('Email failed:', emailErr.message);
+            // We'll return the error message so the user can see it in the alert
+            return res.status(200).json({ 
+              success: true, 
+              emailError: emailErr.message,
+              note: 'Registration saved, but email failed.' 
+            });
           }
         }
       }
