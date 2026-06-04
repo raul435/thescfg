@@ -38,6 +38,35 @@
     .admin-form { display: grid; gap: 20px; }
     .admin-form input, .admin-form textarea, .admin-form select { padding: 12px; border: 1px solid #ccc; width: 100%; font-family: inherit; }
     
+    /* Toast Notifications */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+    .toast {
+      background: var(--chivas-blue);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 4px;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      animation: slideIn 0.3s ease-out forwards;
+      border-left: 5px solid var(--chivas-red);
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .toast.error { border-left-color: #ffcc00; }
+
     .btn { display: inline-block; background: var(--chivas-red); color: white; padding: 12px 30px; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; transition: 0.3s; border: none; cursor: pointer; }
     .btn:hover { background: var(--chivas-blue); }
 
@@ -47,6 +76,20 @@
     #admin-content { display: none; }
   </style>
   <script>
+    function showToast(message, isError = false) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${isError ? 'error' : ''}`;
+      toast.innerHTML = `<span>${isError ? '⚠️' : '✅'}</span> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        toast.style.transition = '0.3s ease-in';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
     function showSection(sectionId) {
       document.querySelectorAll('.admin-tab-content').forEach(section => {
         section.style.display = 'none';
@@ -81,15 +124,15 @@
         });
         const result = await response.json();
         if (response.ok) {
-          alert('Update added successfully!');
+          showToast('Update added successfully!');
           event.target.reset();
           loadExistingContent();
         } else {
-          alert('Error: ' + (result.message || result.error || 'Failed to add'));
+          showToast('Error: ' + (result.message || result.error || 'Failed to add'), true);
         }
       } catch (error) { 
         console.error(error);
-        alert('Network error. Are you running a server?');
+        showToast('Network error.', true);
       }
     }
 
@@ -99,7 +142,7 @@
       const fileInput = event.target.elements.media;
       let mediaUrl = '';
       if (fileInput.files[0]) {
-        if (fileInput.files[0].size > 4 * 1024 * 1024) return alert('File too large (max 4MB)');
+        if (fileInput.files[0].size > 4 * 1024 * 1024) return showToast('File too large (max 4MB)', true);
         const reader = new FileReader();
         const filePromise = new Promise(r => reader.onload = () => r(reader.result));
         reader.readAsDataURL(fileInput.files[0]);
@@ -114,15 +157,15 @@
         });
         const result = await response.json();
         if (response.ok) {
-          alert('News published!');
+          showToast('News published!');
           event.target.reset();
           loadExistingContent();
         } else {
-          alert('Error: ' + (result.message || result.error || 'Failed to publish'));
+          showToast('Error: ' + (result.message || result.error || 'Failed to publish'), true);
         }
       } catch (error) { 
         console.error(error);
-        alert('Network error.');
+        showToast('Network error.', true);
       }
     }
 
@@ -130,7 +173,7 @@
       event.preventDefault();
       const fileInput = event.target.elements.photo;
       if (!fileInput.files[0]) return;
-      if (fileInput.files[0].size > 4 * 1024 * 1024) return alert('File too large (max 4MB)');
+      if (fileInput.files[0].size > 4 * 1024 * 1024) return showToast('File too large (max 4MB)', true);
       
       const reader = new FileReader();
       reader.onload = async function() {
@@ -142,13 +185,13 @@
           });
           const result = await response.json();
           if (response.ok) {
-            alert('Photo uploaded!');
+            showToast('Photo uploaded!');
             event.target.reset();
             loadExistingContent();
           } else {
-            alert('Error: ' + (result.message || result.error || 'Upload failed'));
+            showToast('Error: ' + (result.message || result.error || 'Upload failed'), true);
           }
-        } catch (error) { console.error(error); alert('Network error.'); }
+        } catch (error) { console.error(error); showToast('Network error.', true); }
       };
       reader.readAsDataURL(fileInput.files[0]);
     }
@@ -219,12 +262,12 @@
         const response = await fetch(`/api/data?type=${type}&category=${category}&id=${id}`, { method: 'DELETE' });
         const result = await response.json();
         if (response.ok) {
-          alert('Item deleted.');
+          showToast('Item deleted.');
           loadExistingContent();
         } else {
-          alert('Error: ' + (result.message || result.error || 'Failed to delete'));
+          showToast('Error: ' + (result.message || result.error || 'Failed to delete'), true);
         }
-      } catch (e) { alert('Network error.'); }
+      } catch (e) { showToast('Network error.', true); }
     }
 
     function logout() {
@@ -391,29 +434,5 @@
     </footer>
   </div>
   <div id="toast-container"></div>
-</body>
-</html>margin-top:20px;background:var(--chivas-blue);color:white;">
-            <h3>GK Gallery</h3>
-            <form class="admin-form" onsubmit="handleGallerySubmit(event, 'goalkeepers')">
-              <input type="file" name="photo" accept="image/*" required>
-              <button type="submit" class="btn">Upload</button>
-            </form>
-          </div>
-          <div id="manage-goalkeepers" style="margin-top:30px;"></div>
-        </div>
-      </div>
-    </section>
-
-    <footer>
-      <div class="container" style="text-align:center;">
-        <p>&copy; 2026 TSCFG Admin • System Ready</p>
-      </div>
-    </footer>
-  </div>
-</body>
-</html>2026 TSCFG Admin • System Ready</p>
-      </div>
-    </footer>
-  </div>
 </body>
 </html>
