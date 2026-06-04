@@ -1,10 +1,31 @@
 const fs = require('fs');
 const path = require('path');
 
+// Local data file path
+const DATA_FILE = path.join(process.cwd(), 'data.json');
+
+const getLocalData = () => {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    }
+  } catch (err) {
+    console.error('Error reading local data:', err);
+  }
+  return { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] }, registrations: [] };
+};
+
+const saveLocalData = (data) => {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('Error saving local data:', err);
+  }
+};
+
 module.exports = async (req, res) => {
-  // Use Vercel variables if present, otherwise fallback to your known Upstash credentials
-  const DB_URL = process.env.TSCFG_URL || process.env.KV_REST_API_URL || "https://aunt-fact-hyperclear-53205.upstash.io";
-  const DB_TOKEN = process.env.TSCFG_TOKEN || process.env.KV_REST_API_TOKEN || "Ls7EkTutF7jghRzL8oLEcBkWVOrDnP7c";
+  const DB_URL = process.env.KV_REST_API_URL || "https://pure-rabbit-143044.upstash.io";
+  const DB_TOKEN = process.env.KV_REST_API_TOKEN || "gQAAAAAAAi7EAAIgcDJjZDJmZjBkNDIwZTk0YzQwYTBhNzlhN2E1NjhmZTkxZA";
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
@@ -16,7 +37,8 @@ module.exports = async (req, res) => {
     const url = `${DB_URL.replace(/\/$/, '')}${path}`;
     const options = {
       method,
-      headers: { 'Authorization': `Bearer ${DB_TOKEN}`, 'Content-Type': 'application/json' }
+      headers: { 'Authorization': `Bearer ${DB_TOKEN}`, 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(5000) // 5 second timeout
     };
     if (body) options.body = JSON.stringify(body);
 
@@ -29,52 +51,79 @@ module.exports = async (req, res) => {
   };
 
   try {
-    if (req.method === 'GET') {
+    let siteData;
+    let usingDB = false;
+
+    // Try to get data from DB first
+    try {
       const data = await kvRequest('/get/site_data');
-      let result = data.result;
-      if (!result) {
-        result = { matches: [], news: [], galleries: { mens: [], womens: [], academy: [], goalkeepers: [] }, registrations: [] };
-        await kvRequest('/set/site_data', 'POST', result);
-      } else {
-        result = typeof result === 'string' ? JSON.parse(result) : result;
+      if (data && data.result) {
+        siteData = typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+        usingDB = true;
       }
-      return res.status(200).json(result);
+    } catch (dbErr) {
+      console.warn('Database connection failed, using local storage:', dbErr.message);
+      siteData = getLocalData();
+    }
+
+    if (!siteData) siteData = getLocalData();
+
+    if (req.method === 'GET') {
+      return res.status(200).json(siteData);
     }
 
     if (req.method === 'POST') {
-      const dataResponse = await kvRequest('/get/site_data');
-      let currentData = dataResponse.result;
-      currentData = typeof currentData === 'string' ? JSON.parse(currentData) : (currentData || { matches: [], news: [], galleries: {}, registrations: [] });
-
       let body = req.body;
       if (typeof body === 'string' && body.trim()) body = JSON.parse(body);
       const { type, category, item } = body || {};
 
       if (type === 'galleries') {
-        if (!currentData.galleries) currentData.galleries = {};
-        if (!currentData.galleries[category]) currentData.galleries[category] = [];
-        currentData.galleries[category].push({ id: Date.now(), ...item });
+        if (!siteData.galleries) siteData.galleries = {};
+        if (!siteData.galleries[category]) siteData.galleries[category] = [];
+        siteData.galleries[category].push({ id: Date.now(), ...item });
       } else {
-        if (!currentData[type]) currentData[type] = [];
-        currentData[type].push({ id: Date.now(), ...item });
+        if (!siteData[type]) siteData[type] = [];
+        siteData[type].push({ id: Date.now(), ...item });
       }
 
-      await kvRequest('/set/site_data', 'POST', currentData);
+      // Save to local always for safety
+      saveLocalData(siteData);
+
+      // Try to save to DB if it was working
+      if (usingDB) {
+        try {
+          await kvRequest('/set/site_data', 'POST', siteData);
+        } catch (e) {
+          console.error('Failed to update DB after local update');
+        }
+      }
+
       return res.status(200).json({ success: true });
     }
 
     if (req.method === 'DELETE') {
       const { type, category, id } = req.query;
-      const dataResponse = await kvRequest('/get/site_data');
-      let currentData = typeof dataResponse.result === 'string' ? JSON.parse(dataResponse.result) : dataResponse.result;
 
       if (type === 'galleries') {
-        currentData.galleries[category] = currentData.galleries[category].filter(i => i.id.toString() !== id.toString());
+        if (siteData.galleries && siteData.galleries[category]) {
+          siteData.galleries[category] = siteData.galleries[category].filter(i => i.id.toString() !== id.toString());
+        }
       } else {
-        currentData[type] = currentData[type].filter(i => i.id.toString() !== id.toString());
+        if (siteData[type]) {
+          siteData[type] = siteData[type].filter(i => i.id.toString() !== id.toString());
+        }
       }
 
-      await kvRequest('/set/site_data', 'POST', currentData);
+      saveLocalData(siteData);
+
+      if (usingDB) {
+        try {
+          await kvRequest('/set/site_data', 'POST', siteData);
+        } catch (e) {
+          console.error('Failed to update DB after local delete');
+        }
+      }
+
       return res.status(200).json({ success: true });
     }
   } catch (err) {
@@ -82,3 +131,4 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
