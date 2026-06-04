@@ -38,20 +38,19 @@ const sendEmail = async (registration) => {
     return;
   }
 
-  // Optimized SMTP Config for Hotmail/Outlook/Office365
+  // Final attempt at SMTP Config for Hotmail/Outlook
   const transporter = nodemailer.createTransport({
-    host: "smtp-mail.outlook.com", // More standard host for Outlook
+    host: "smtp.office365.com",
     port: 587,
     secure: false, 
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER.trim(),
+      pass: process.env.EMAIL_PASS.trim(),
     },
     tls: {
-      ciphers: 'SSLv3', // Re-adding but with cautious config or keeping it clean
+      ciphers: 'SSLv3',
       rejectUnauthorized: false 
-    },
-    requireTLS: true // Outlook often requires this
+    }
   });
 
   const mailOptions = {
