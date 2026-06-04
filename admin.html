@@ -58,6 +58,32 @@
     }
     .toast.error { border-left-color: #ffcc00; }
 
+    /* Custom Modal */
+    #modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+    .modal {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border-top: 6px solid var(--chivas-red);
+    }
+    .modal h3 { color: var(--chivas-blue); text-transform: uppercase; margin-bottom: 15px; }
+    .modal p { margin-bottom: 25px; color: #666; }
+    .modal-btns { display: flex; gap: 10px; justify-content: center; }
+    .btn-secondary { background: #666; }
+    .btn-secondary:hover { background: #333; }
+
     .btn { display: inline-block; background: var(--chivas-red); color: white; padding: 12px 30px; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; transition: 0.3s; border: none; cursor: pointer; }
     .btn:hover { background: var(--chivas-blue); }
 
@@ -232,6 +258,35 @@
       }
     }
 
+    let deleteContext = null;
+
+    function openConfirmModal(type, category, id) {
+      deleteContext = { type, category, id };
+      document.getElementById('modal-overlay').style.display = 'flex';
+    }
+
+    function closeConfirmModal() {
+      deleteContext = null;
+      document.getElementById('modal-overlay').style.display = 'none';
+    }
+
+    async function confirmDelete() {
+      if (!deleteContext) return;
+      const { type, category, id } = deleteContext;
+      closeConfirmModal();
+      
+      try {
+        const response = await fetch(`/api/data?type=${type}&category=${category}&id=${id}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (response.ok) {
+          showToast('Item deleted.');
+          loadExistingContent();
+        } else {
+          showToast('Error: ' + (result.message || result.error || 'Failed to delete'), true);
+        }
+      } catch (e) { showToast('Network error.', true); }
+    }
+
     function createItemEl(type, label, title, subtitle, id, category, imgUrl) {
       const div = document.createElement('div');
       div.className = 'admin-panel';
@@ -245,22 +300,8 @@
       div.style.textAlign = 'left';
       let media = imgUrl ? `<img src="${imgUrl}" style="height:40px;width:40px;object-fit:cover;margin-right:15px;border-radius:4px;">` : '';
       div.innerHTML = `<div style="display:flex;align-items:center;">${media}<div><small style="color:var(--chivas-red);font-weight:700;">[${label}]</small> <strong>${title}</strong><br><small>${subtitle}</small></div></div>
-                       <button onclick="deleteItem('${type}', '${category}', '${id}')" class="btn" style="padding:5px 10px;font-size:0.7rem;background:#333;">Delete</button>`;
+                       <button onclick="openConfirmModal('${type}', '${category}', '${id}')" class="btn" style="padding:5px 10px;font-size:0.7rem;background:#333;">Delete</button>`;
       return div;
-    }
-
-    async function deleteItem(type, category, id) {
-      if (!confirm('Delete this item?')) return;
-      try {
-        const response = await fetch(`/api/data?type=${type}&category=${category}&id=${id}`, { method: 'DELETE' });
-        const result = await response.json();
-        if (response.ok) {
-          showToast('Item deleted.');
-          loadExistingContent();
-        } else {
-          showToast('Error: ' + (result.message || result.error || 'Failed to delete'), true);
-        }
-      } catch (e) { showToast('Network error.', true); }
     }
 
     function logout() {
@@ -427,26 +468,5 @@
       </div>
     </div>
   </div>
-</body>
-</html>
-opy; 2026 TSCFG Admin • System Ready</p>
-      </div>
-    </footer>
-  </div>
-  <div id="toast-container"></div>
-</body>
-</html>
-"margin-top:30px;"></div>
-        </div>
-      </div>
-    </section>
-
-    <footer>
-      <div class="container" style="text-align:center;">
-        <p>&copy; 2026 TSCFG Admin • System Ready</p>
-      </div>
-    </footer>
-  </div>
-  <div id="toast-container"></div>
 </body>
 </html>
