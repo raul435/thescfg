@@ -52,26 +52,17 @@ const sendEmail = async (registration) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: process.env.EMAIL_TO || process.env.EMAIL_USER,
-    subject: `New Registration: ${full_name || 'Inquiry'}`,
-    text: `
-      New Membership Registration:
-      ---------------------------
-      Name: ${full_name || 'N/A'}
-      Membership: ${membership_type || 'N/A'}
-      DOB: ${dob || 'N/A'}
-      Phone: ${phone || 'N/A'}
-      Email: ${email || 'N/A'}
-      Date: ${new Date().toLocaleString()}
-    `,
+    subject: `REGISTRATION: ${full_name || 'New User'} - TSCFG`,
+    text: `NEW REGISTRATION RECEIVED\n\nName: ${full_name}\nMembership: ${membership_type}\nDOB: ${dob}\nPhone: ${phone}\nEmail: ${email}\nDate: ${new Date().toLocaleString()}`,
     html: `
-      <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; max-width: 600px;">
-        <h2 style="color: #C8102E; border-bottom: 2px solid #C8102E; padding-bottom: 10px;">New Membership Registration</h2>
-        <p><strong>Name:</strong> ${full_name || 'N/A'}</p>
-        <p><strong>Membership:</strong> ${membership_type || 'N/A'}</p>
-        <p><strong>Date of Birth:</strong> ${dob || 'N/A'}</p>
-        <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
-        <p><strong>Email:</strong> ${email || 'N/A'}</p>
-        <p style="margin-top: 20px; font-size: 0.8rem; color: #999; border-top: 1px solid #eee; pt: 10px;">Sent from TSCFG Website</p>
+      <div style="font-family: sans-serif; padding: 10px;">
+        <h2 style="color: #C8102E;">New TSCFG Registration</h2>
+        <hr>
+        <p><strong>Name:</strong> ${full_name}</p>
+        <p><strong>Membership:</strong> ${membership_type}</p>
+        <p><strong>DOB:</strong> ${dob}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Email:</strong> ${email}</p>
       </div>
     `
   };
