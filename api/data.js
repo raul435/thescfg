@@ -38,24 +38,20 @@ const sendEmail = async (registration) => {
     return;
   }
 
-  // Reverting to Hotmail/Outlook SMTP as requested
+  // SMTP Config for Resend (Professional & Reliable)
   const transporter = nodemailer.createTransport({
-    host: "smtp.office365.com",
-    port: 587,
-    secure: false, 
+    host: "smtp.resend.com",
+    port: 465,
+    secure: true, 
     auth: {
-      user: process.env.EMAIL_USER.trim(),
-      pass: process.env.EMAIL_PASS.trim(),
-    },
-    tls: {
-      ciphers: 'SSLv3',
-      rejectUnauthorized: false 
+      user: "resend", // Always "resend"
+      pass: process.env.EMAIL_PASS.trim(), // Your re_... API Key from Vercel
     }
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_TO || process.env.EMAIL_USER,
+    from: "onboarding@resend.dev", // Default Resend sender for new accounts
+    to: process.env.EMAIL_TO || "raullopez.tscfg@hotmail.com", // Destination email
     subject: `REGISTRATION: ${full_name || 'New User'} - TSCFG`,
     text: `NEW REGISTRATION RECEIVED\n\nName: ${full_name}\nMembership: ${membership_type}\nDOB: ${dob}\nPhone: ${phone}\nEmail: ${email}\nDate: ${new Date().toLocaleString()}`,
     html: `
