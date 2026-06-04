@@ -227,25 +227,32 @@
       } catch (e) { alert('Network error.'); }
     }
 
+    function logout() {
+      sessionStorage.removeItem('adminLoggedIn');
+      window.location.href = 'login.html';
+    }
+
     window.onload = function() {
-      const password = prompt("Admin password:");
-      if (password === "admin123") {
+      if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
+        window.location.href = "login.html";
+      } else {
         document.getElementById("admin-content").style.display = "block";
         showSection('main');
-      } else { window.location.href = "index.html"; }
+      }
     };
   </script>
 </head>
 <body>
   <div id="admin-content">
     <div class="top-bar">
-      <div class="container">
+      <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
         <ul>
           <li><a href="mens.html">Men's</a></li>
           <li><a href="womens.html">Women's</a></li>
           <li><a href="academy.html">Academy</a></li>
           <li><a href="goalkeepers.html">Goalkeepers</a></li>
         </ul>
+        <button onclick="logout()" style="background:none; border:none; color:rgba(255,255,255,0.7); cursor:pointer; font-family:inherit; font-weight:700; text-transform:uppercase; font-size:0.8rem;">Logout</button>
       </div>
     </div>
 
@@ -380,6 +387,31 @@
     <footer>
       <div class="container" style="text-align:center;">
         <p>&copy; 2026 TSCFG Admin • System Ready</p>
+      </div>
+    </footer>
+  </div>
+  <div id="toast-container"></div>
+</body>
+</html>margin-top:20px;background:var(--chivas-blue);color:white;">
+            <h3>GK Gallery</h3>
+            <form class="admin-form" onsubmit="handleGallerySubmit(event, 'goalkeepers')">
+              <input type="file" name="photo" accept="image/*" required>
+              <button type="submit" class="btn">Upload</button>
+            </form>
+          </div>
+          <div id="manage-goalkeepers" style="margin-top:30px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container" style="text-align:center;">
+        <p>&copy; 2026 TSCFG Admin • System Ready</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>2026 TSCFG Admin • System Ready</p>
       </div>
     </footer>
   </div>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | TSCFG Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --chivas-red: #C8102E;
+      --chivas-blue: #002855;
+      --chivas-white: #FFFFFF;
+      --chivas-gray: #F4F4F4;
+      --chivas-text: #333333;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Montserrat', sans-serif; 
+      background-color: var(--chivas-blue);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: var(--chivas-text);
+    }
+
+    .login-card {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      border-top: 8px solid var(--chivas-red);
+    }
+
+    .logo-img {
+      height: 80px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--chivas-blue);
+      margin-bottom: 30px;
+      font-size: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      color: var(--chivas-blue);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--chivas-gray);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--chivas-red);
+    }
+
+    .btn {
+      width: 100%;
+      background: var(--chivas-red);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background: #a00d25;
+    }
+
+    .error-msg {
+      color: var(--chivas-red);
+      font-size: 0.85rem;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 20px;
+      color: #666;
+      text-decoration: none;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .back-link:hover {
+      color: var(--chivas-blue);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <img src="assets/images/logo.jpeg" alt="TSCFG Logo" class="logo-img">
+    <h2>Admin Login</h2>
+    
+    <form id="login-form">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter admin password" required>
+      </div>
+      <button type="submit" class="btn">Login</button>
+      <p id="error-msg" class="error-msg">Incorrect password. Please try again.</p>
+    </form>
+
+    <a href="index.html" class="back-link">← Back to Site</a>
+  </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      
+      if (password === "admin123") {
+        // Use sessionStorage to keep the user logged in for the session
+        sessionStorage.setItem('adminLoggedIn', 'true');
+        window.location.href = 'admin.html';
+      } else {
+        document.getElementById('error-msg').style.display = 'block';
+      }
+    });
+
+    // If already logged in, redirect to admin
+    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+      window.location.href = 'admin.html';
+    }
+  </script>
+</body>
+</html>
