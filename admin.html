@@ -14,24 +14,15 @@
       --chivas-text: #333333;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Montserrat', sans-serif; line-height: 1.6; color: var(--chivas-text); background-color: var(--chivas-white); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    body { font-family: 'Montserrat', sans-serif; line-height: 1.6; color: var(--chivas-text); background-color: var(--chivas-white); min-height: 100vh; display: flex; flex-direction: column; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
 
     .top-bar { background: var(--chivas-blue); color: white; padding: 10px 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
     .top-bar ul { display: flex; list-style: none; gap: 20px; }
     .top-bar a { color: rgba(255,255,255,0.7); text-decoration: none; }
     .top-bar a:hover { color: white; }
 
-    .nav { background: white; padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
-    .nav-content { display: flex; justify-content: space-between; align-items: center; }
-    .logo-container { display: flex; align-items: center; text-decoration: none; gap: 15px; }
-    .logo-img { height: 50px; }
-    .logo-text { font-weight: 800; font-size: 1.8rem; color: var(--chivas-blue); border-left: 5px solid var(--chivas-red); padding-left: 10px; text-transform: uppercase; }
-    .nav ul { display: flex; list-style: none; gap: 25px; }
-    .nav a { color: var(--chivas-blue); text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.9rem; }
-    .nav a:hover { color: var(--chivas-red); }
-
-    .section { padding: 80px 0; }
+    .section { padding: 40px 0; flex: 1; }
     .section-title { border-bottom: 4px solid var(--chivas-red); display: inline-block; padding-bottom: 10px; font-size: 2rem; font-weight: 800; text-transform: uppercase; color: var(--chivas-blue); margin-bottom: 40px; }
     
     .admin-panel { background: var(--chivas-gray); padding: 40px; border-radius: 4px; max-width: 600px; margin: 0 auto; }
@@ -70,10 +61,11 @@
     .btn { display: inline-block; background: var(--chivas-red); color: white; padding: 12px 30px; text-decoration: none; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; transition: 0.3s; border: none; cursor: pointer; }
     .btn:hover { background: var(--chivas-blue); }
 
-    footer { background: var(--chivas-blue); color: white; padding: 60px 0 20px; margin-top: 80px; }
-    .copyright { text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+    footer { background: var(--chivas-blue); color: white; padding: 40px 0; margin-top: auto; }
+    .copyright { text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.4); }
     
-    #admin-content { display: none; }
+    #admin-content { display: none; flex-direction: column; min-height: 100vh; }
+    .admin-tab-content { display: none; margin-bottom: 40px; }
   </style>
   <script>
     function showToast(message, isError = false) {
@@ -99,7 +91,8 @@
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.style.background = '#333';
       });
-      document.getElementById('btn-' + sectionId).style.background = 'var(--chivas-red)';
+      const activeBtn = document.getElementById('btn-' + sectionId);
+      if (activeBtn) activeBtn.style.background = 'var(--chivas-red)';
       
       loadExistingContent();
     }
@@ -279,7 +272,7 @@
       if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
         window.location.href = "login.html";
       } else {
-        document.getElementById("admin-content").style.display = "block";
+        document.getElementById("admin-content").style.display = "flex";
         showSection('main');
       }
     };
@@ -290,6 +283,7 @@
     <div class="top-bar">
       <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
         <ul>
+          <li><a href="index.html">View Site</a></li>
           <li><a href="mens.html">Men's</a></li>
           <li><a href="womens.html">Women's</a></li>
           <li><a href="academy.html">Academy</a></li>
@@ -311,6 +305,7 @@
           <button class="tab-btn btn" onclick="showSection('goalkeepers')" id="btn-goalkeepers">Goalkeepers</button>
         </div>
 
+        <!-- MAIN SECTION -->
         <div id="section-main" class="admin-tab-content">
           <div class="admin-panel">
             <h3>Home News</h3>
@@ -324,7 +319,8 @@
           <div id="manage-main" style="margin-top:30px;"></div>
         </div>
 
-        <div id="section-mens" class="admin-tab-content" style="display:none;">
+        <!-- MENS SECTION -->
+        <div id="section-mens" class="admin-tab-content">
           <div class="admin-panel">
             <h3>Mens Match</h3>
             <form class="admin-form" onsubmit="handleMatchSubmit(event, 'mens')">
@@ -345,7 +341,8 @@
           <div id="manage-mens" style="margin-top:30px;"></div>
         </div>
 
-        <div id="section-womens" class="admin-tab-content" style="display:none;">
+        <!-- WOMENS SECTION -->
+        <div id="section-womens" class="admin-tab-content">
           <div class="admin-panel">
             <h3>Womens Match</h3>
             <form class="admin-form" onsubmit="handleMatchSubmit(event, 'womens')">
@@ -366,7 +363,8 @@
           <div id="manage-womens" style="margin-top:30px;"></div>
         </div>
 
-        <div id="section-academy" class="admin-tab-content" style="display:none;">
+        <!-- ACADEMY SECTION -->
+        <div id="section-academy" class="admin-tab-content">
           <div class="admin-panel">
             <h3>Academy Event</h3>
             <form class="admin-form" onsubmit="handleMatchSubmit(event, 'academy')">
@@ -387,7 +385,8 @@
           <div id="manage-academy" style="margin-top:30px;"></div>
         </div>
 
-        <div id="section-goalkeepers" class="admin-tab-content" style="display:none;">
+        <!-- GOALKEEPERS SECTION -->
+        <div id="section-goalkeepers" class="admin-tab-content">
           <div class="admin-panel">
             <h3>GK Event</h3>
             <form class="admin-form" onsubmit="handleMatchSubmit(event, 'goalkeepers')">
