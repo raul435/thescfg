@@ -1,20 +1,6 @@
-- titulo completo -
+- ajustar membership. pendiente 
 
-- elite por performance. *
-
-- development por formation. *
-
-- Tactical Video Review quitar en membresias de men's
-
-- College Recruitment Path quitar en women's
-
-- cambiar botones azules por un drop down menu (programs).
-
-- tienda cambiarlo a shop.
-
-- ajustar membership.
-
-- checar musica de fondo (musica neutral)
+- checar musica de fondo (musica neutral). 
 
 - quitar u de edades.
 
