@@ -1,41 +1,21 @@
-crear pestana de admin para agregar y actulizar cosas como partidos y noticias ✅
+- titulo completo
 
--quitar y agregar botones
-    quitar get started y learn now.
-    agregar en linea blanca boton de membresias con su informacion.
+- elite por performance.
 
--register now
-    lleva al registro de membresia.
-    
-    
--Men's 
-    Agregar pestana que contenga los programas de entrenamiento y partidos, como objetivos, horarios y foto del equipo. ✅
-    resultados de exitos de jugadores que han firmado en otros lugares. ✅
-    agregar galeria de fotos hasta abajo de la carpeta men's ✅
+- development por formation.
 
--Womens's
-    Agregar pestana que contenga los programas de entrenamiento y partidos, como objetivos, horarios y foto del equipo. ✅
-    resultados de exitos de jugadores que han firmado en otros lugares. ✅
-    agregar galeria de fotos hasta abajo de la carpeta Women's ✅
+- Tactical Video Review quitar een membresias de men's
 
--Academy
-    Agregar pestana ✅
-    agregar opciones de membresia (boys, female, male, goalkeepers). ✅
-    agregar galeria de fotos hasta abajo de la carpeta Academy ✅
+- College Recruitment Path quitar en women's
 
--goalkeepers
-    agregar pestana ✅
-    tambien agregar la membresia de goalkepeers. ✅
-    que aparescan inmagenes y videos de la carpeta de goalkeepers referencias ✅
+- cambiar botones azules por un drop down menu (programs).
 
--boton meet the owner
-    mandar a un nuevo apartado debajo de the club para describir al dueno. ✅
+- tienda cambiarlo a shop.
 
--agregar area de matches
-    aqui apareceran los partidos ✅
+- ajustar membership.
 
--dividir membresias en sus pestanas 
--crear pestanas de registro.
--descripcion de membrsia.
--pestanas para llenar formato(sponsor y membresias).
--base de datos.
+- checar musica de fondo (musica neutral)
+
+- quitar u de edades.
+
+- quitar celular
