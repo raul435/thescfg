@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | The Southern California Footballing Group Admin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --chivas-red: #C8102E;
-      --chivas-blue: #002855;
+      --chivas-red: #a8352a;
+      --chivas-blue: #0f2417;
       --chivas-white: #FFFFFF;
-      --chivas-gray: #F4F4F4;
-      --chivas-text: #333333;
+      --chivas-gray: #f6f3ec;
+      --chivas-text: #14231a;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      font-family: 'Montserrat', sans-serif; 
+      font-family: 'Barlow', sans-serif; 
       background-color: var(--chivas-blue);
       display: flex;
       justify-content: center;
@@ -115,6 +115,17 @@
 
     .back-link:hover {
       color: var(--chivas-blue);
+    }
+
+    /* Accessibility: keyboard focus, keyboard dropdowns, reduced motion */
+    a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--chivas-red);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 2px #fff;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+      .card:hover { transform: none; }
     }
   </style>
 </head>
