@@ -223,7 +223,7 @@
           throw new Error(errData.error || `Server returned ${response.status}`);
         }
         const data = await response.json();
-        const categories = ['main', 'mens', 'womens', 'academy', 'goalkeepers'];
+        const categories = ['main', 'mens', 'academy', 'goalkeepers'];
         
         categories.forEach(cat => {
           const container = document.getElementById('manage-' + cat);
@@ -250,7 +250,7 @@
         });
       } catch (e) { 
         console.error(e);
-        const categories = ['main', 'mens', 'womens', 'academy', 'goalkeepers'];
+        const categories = ['main', 'mens', 'academy', 'goalkeepers'];
         categories.forEach(cat => {
           const container = document.getElementById('manage-' + cat);
           if (container) container.innerHTML = `<p style="color:red;">Error: ${e.message}</p>`;
@@ -340,7 +340,6 @@
         <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; flex-wrap: wrap;">
           <button class="tab-btn btn" onclick="showSection('main')" id="btn-main">Main</button>
           <button class="tab-btn btn" onclick="showSection('mens')" id="btn-mens">Mens</button>
-          <button class="tab-btn btn" onclick="showSection('womens')" id="btn-womens">Womens</button>
           <button class="tab-btn btn" onclick="showSection('academy')" id="btn-academy">Academy</button>
           <button class="tab-btn btn" onclick="showSection('goalkeepers')" id="btn-goalkeepers">Goalkeepers</button>
         </div>
@@ -379,28 +378,6 @@
             </form>
           </div>
           <div id="manage-mens" style="margin-top:30px;"></div>
-        </div>
-
-        <!-- WOMENS SECTION -->
-        <div id="section-womens" class="admin-tab-content">
-          <div class="admin-panel">
-            <h3>Womens Match</h3>
-            <form class="admin-form" onsubmit="handleMatchSubmit(event, 'womens')">
-              <input type="text" name="title" placeholder="Opponent" required>
-              <input type="text" name="location" placeholder="Location" required>
-              <input type="date" name="date" required>
-              <input type="time" name="time" required>
-              <button type="submit" class="btn">Add Match</button>
-            </form>
-          </div>
-          <div class="admin-panel" style="margin-top:20px;background:var(--chivas-blue);color:white;">
-            <h3>Womens Gallery</h3>
-            <form class="admin-form" onsubmit="handleGallerySubmit(event, 'womens')">
-              <input type="file" name="photo" accept="image/*" required>
-              <button type="submit" class="btn">Upload</button>
-            </form>
-          </div>
-          <div id="manage-womens" style="margin-top:30px;"></div>
         </div>
 
         <!-- ACADEMY SECTION -->
