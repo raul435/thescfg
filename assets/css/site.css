@@ -105,7 +105,7 @@ a:hover { color: var(--green-700); }
 /* Club gallery carousel */
 .gallery { padding-top: 60px; }
 .gallery .h-xl { margin-bottom: 32px; }
-.carousel { position: relative; overflow: hidden; border-radius: 20px; background: var(--green-900); aspect-ratio: 16/9; }
+.carousel { position: relative; overflow: hidden; border-radius: 20px; background: var(--green-900); aspect-ratio: 16/9; max-width: 880px; margin: 0 auto; }
 .carousel-track { display: flex; height: 100%; transition: transform .6s ease; }
 .slide { position: relative; flex: 0 0 100%; height: 100%; overflow: hidden; }
 .slide::before { content: ''; position: absolute; inset: -30px; background: var(--img) center/cover; filter: blur(24px) brightness(.55); }
@@ -205,7 +205,7 @@ footer ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
   .match-grid, .news-grid { grid-template-columns: 1fr; }
   .programs, .news { padding-top: 64px; }
   .gallery { padding-top: 40px; }
-  .carousel { aspect-ratio: 1/1; border-radius: 16px; }
+  .carousel { aspect-ratio: 4/3; border-radius: 16px; }
   .carousel-btn { width: 40px; height: 40px; font-size: 26px; }
   .carousel-btn.prev { left: 10px; }
   .carousel-btn.next { right: 10px; }
