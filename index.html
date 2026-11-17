@@ -76,7 +76,7 @@
     <div class="eyebrow">Find your place</div>
     <h2 class="h-xl">Our programs</h2>
     <div class="card-grid">
-      <a href="mens.html" class="program" style="background-image: url('assets/images/mens-program.jpg');">
+      <a href="mens.html" class="program" style="background-image: url('assets/images/mens-card.jpg');">
         <span class="chip">16+</span>
         <h3>Men's Program</h3>
         <p>Intensive training sessions for players 16 years and older looking to elevate their game.</p>
@@ -94,6 +94,31 @@
         <p>Specialized training to master the box. Technique, positioning, and mental strength.</p>
         <span class="more">Learn more →</span>
       </a>
+    </div>
+  </section>
+
+  <!-- Club gallery carousel -->
+  <section id="gallery" class="container gallery" aria-roledescription="carousel" aria-label="Club photos">
+    <div class="eyebrow">On the pitch</div>
+    <h2 class="h-xl">Club gallery</h2>
+    <div class="carousel">
+      <div class="carousel-track">
+        <figure class="slide" style="--img: url('/assets/images/mens-program.jpg');" aria-roledescription="slide" aria-label="1 of 4">
+          <img src="assets/images/mens-program.jpg" alt="TSCFG first team group photo on the training pitch at night">
+        </figure>
+        <figure class="slide" style="--img: url('/assets/images/gk-excellence.jpg');" aria-roledescription="slide" aria-label="2 of 4">
+          <img src="assets/images/gk-excellence.jpg" alt="Goalkeeper coach working with a young keeper in front of the goal" loading="lazy">
+        </figure>
+        <figure class="slide" style="--img: url('/assets/images/academy.jpg');" aria-roledescription="slide" aria-label="3 of 4">
+          <img src="assets/images/academy.jpg" alt="Academy player taking a throw-in" loading="lazy">
+        </figure>
+        <figure class="slide" style="--img: url('/assets/images/cancha.jpg');" aria-roledescription="slide" aria-label="4 of 4">
+          <img src="assets/images/cancha.jpg" alt="The TSCFG training ground on a sunny morning" loading="lazy">
+        </figure>
+      </div>
+      <button class="carousel-btn prev" type="button" aria-label="Previous photo">‹</button>
+      <button class="carousel-btn next" type="button" aria-label="Next photo">›</button>
+      <div class="carousel-dots" role="group" aria-label="Choose photo"></div>
     </div>
   </section>
 
@@ -294,6 +319,48 @@
     }
 
     window.addEventListener('load', loadContent);
+
+    // Club gallery carousel
+    (function () {
+      const root = document.querySelector('.carousel');
+      if (!root) return;
+      const track = root.querySelector('.carousel-track');
+      const slides = [...root.querySelectorAll('.slide')];
+      const dotsEl = root.querySelector('.carousel-dots');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let i = 0, timer = null;
+      const dots = slides.map((_, n) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', `Show photo ${n + 1}`);
+        b.addEventListener('click', () => { go(n); restart(); });
+        dotsEl.appendChild(b);
+        return b;
+      });
+      function go(n) {
+        i = (n + slides.length) % slides.length;
+        track.style.transform = `translateX(-${i * 100}%)`;
+        slides.forEach((s, k) => s.setAttribute('aria-hidden', k !== i));
+        dots.forEach((d, k) => d.setAttribute('aria-current', k === i));
+      }
+      function stop() { clearInterval(timer); timer = null; }
+      function restart() { stop(); if (!reduce) timer = setInterval(() => go(i + 1), 5000); }
+      root.querySelector('.prev').addEventListener('click', () => { go(i - 1); restart(); });
+      root.querySelector('.next').addEventListener('click', () => { go(i + 1); restart(); });
+      root.addEventListener('mouseenter', stop);
+      root.addEventListener('mouseleave', restart);
+      root.addEventListener('focusin', stop);
+      root.addEventListener('focusout', restart);
+      let x0 = null;
+      root.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; stop(); }, { passive: true });
+      root.addEventListener('touchend', e => {
+        if (x0 === null) return;
+        const dx = e.changedTouches[0].clientX - x0;
+        if (Math.abs(dx) > 40) go(dx < 0 ? i + 1 : i - 1);
+        x0 = null; restart();
+      });
+      go(0); restart();
+    })();
   </script>
 </body>
 </html>

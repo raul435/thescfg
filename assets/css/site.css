@@ -102,6 +102,23 @@ a:hover { color: var(--green-700); }
 .program p { font-size: 15px; margin-bottom: 14px; }
 .more { font-weight: 700; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
 
+/* Club gallery carousel */
+.gallery { padding-top: 60px; }
+.gallery .h-xl { margin-bottom: 32px; }
+.carousel { position: relative; overflow: hidden; border-radius: 20px; background: var(--green-900); aspect-ratio: 16/9; }
+.carousel-track { display: flex; height: 100%; transition: transform .6s ease; }
+.slide { position: relative; flex: 0 0 100%; height: 100%; overflow: hidden; }
+.slide::before { content: ''; position: absolute; inset: -30px; background: var(--img) center/cover; filter: blur(24px) brightness(.55); }
+.slide img { position: relative; width: 100%; height: 100%; object-fit: contain; }
+.carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 0; background: rgba(255,255,255,.9); color: var(--ink); font-size: 30px; line-height: 1; cursor: pointer; display: grid; place-items: center; padding-bottom: 4px; transition: background .2s, color .2s; }
+.carousel-btn:hover { background: var(--red); color: #fff; }
+.carousel-btn.prev { left: 16px; }
+.carousel-btn.next { right: 16px; }
+.carousel-dots { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; gap: 4px; }
+.carousel-dots button { width: 24px; height: 24px; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.carousel-dots button::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.55); transition: background .2s, transform .2s; }
+.carousel-dots button[aria-current="true"]::after { background: #fff; transform: scale(1.3); }
+
 /* Memberships */
 .memberships { margin-top: 80px; background: var(--green-700); color: #fff; padding: 90px 0; }
 .memberships .eyebrow { color: var(--red-light); }
@@ -187,6 +204,11 @@ footer ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
   .panel { padding: 20px; }
   .match-grid, .news-grid { grid-template-columns: 1fr; }
   .programs, .news { padding-top: 64px; }
+  .gallery { padding-top: 40px; }
+  .carousel { aspect-ratio: 1/1; border-radius: 16px; }
+  .carousel-btn { width: 40px; height: 40px; font-size: 26px; }
+  .carousel-btn.prev { left: 10px; }
+  .carousel-btn.next { right: 10px; }
   .memberships { padding: 64px 0; margin-top: 56px; }
   .club { gap: 40px; padding-top: 56px; padding-bottom: 64px; grid-template-columns: 1fr; }
   .club-photo { box-shadow: 12px 12px 0 var(--red); margin-right: 12px; }
